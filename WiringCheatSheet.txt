@@ -23,9 +23,9 @@ Grey    *   P_D2   | Pad (Signal)  | [*] 2/INT0 [*]  [ ]  [*]     VIN[ ] |      
         *          |               |            [ ]  [ ]  [ ]            |               |          *
         *          |               |            MISO SCK  RST            |               |          *
         *          |               +--ATtiny88---------------------------+               |          *
-                   |                            PWR       NEU                            |
-                   |                            RED      WHITE                           |
-                   /                                                                     \
+        *          |                            PWR       NEU                            |          *
+        *          |                            RED      WHITE                           |          *
+        *          /                                                                     \          *
                    
 Dia. 2: MD Board Underside * Dia. 3: Controller wire layout                      
        +-----------+       * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+

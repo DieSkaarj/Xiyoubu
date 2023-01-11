@@ -55,7 +55,7 @@ const uint8_t pad_mask{ 0b00000101 },
 
 struct Console
 {
-  enum ERegion
+  enum ERegion : int8_t
   {
     NIL = 0x00,
     EUR = 0x01,
@@ -98,9 +98,30 @@ struct Console
     CONSOLE |= REGION(_region);
   }
 
+  void handle()
+  {
+    const bool reset{(PINC1&B00000010)>>1};
+
+  //  PORTC |=1;
+    
+    if( !reset )
+    {
+      console_restart();
+    }
+  }
+
   const ERegion region()
   {
     return _region;
+  }
+
+  void console_restart()
+  {
+    
+    CONSOLE &=~(B1<<PINC0);
+    delay(10U);
+    CONSOLE |=(B1<<PINC0);
+//      CONSOLE &=~LIGHT(3);
   }
 
   void flash_led()
@@ -122,7 +143,7 @@ struct Console
     _region(EUR)
   {
     CONSOLE_DDR = CONSOLE_CONF;  // Console Operators Reset/Lang/Video/LED 
-    CONSOLE = CLEAR;
+    CONSOLE = B00000001;
 
     reset_system( EUR );
   }
@@ -194,6 +215,7 @@ class Controller {
 
   void handle(Console &t_console)
   {
+    Console &md = t_console;
 /*
  * If lines connected to Left and Right are low the console asserts that a
  * 3BTN controller is present. These values are masked when handling, 
@@ -213,28 +235,34 @@ class Controller {
     }
 
     if
-    ( ( millis() - _dt < _debounce ) || status!=last_read )
+    ( ( millis() - _dt < _debounce ) || status==last_read )
       return;
 
     switch( status )
     {
       case REGION_FWD:
       {
-        t_console.reset_system \
+        md.reset_system \
         (
           static_cast<Console::ERegion> \
-          (t_console.region()+1) \
+          (md.region()+1) \
         );
       }
       break;
 
       case REGION_BCK:
       {
-        t_console.reset_system \
+        md.reset_system \
         (
           static_cast<Console::ERegion> \
-          (t_console.region()-1) \
+          (md.region()-1) \
         );
+      }
+      break;
+
+      case IGR:
+      {
+        md.console_restart();
       }
       break;
     }
@@ -244,14 +272,13 @@ class Controller {
   }
 
   Controller():
-    _debounce(PAD_DEBOUNCE){
-
+    _debounce(PAD_DEBOUNCE)
+  {
 /*
  *  Set Port D to input and clear pull-up resistors 
  */
     CONTROLLER_DDR = CLEAR;
     CONTROLLER = CLEAR;
-
 /*
  * Set interrupt mode to logical CHANGE on INT0 (pin18/D2.)
  */
@@ -278,4 +305,5 @@ void setup()
 void loop()
 {
   pad.handle(mega_drive);
+  mega_drive.handle();
 }

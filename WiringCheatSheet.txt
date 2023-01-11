@@ -22,10 +22,11 @@ White   *   P_D1   | Pad Start/C   | [*] 1      VCC  MOSI GND     GND[ ] |      
 Grey    *   P_D2   | Pad (Signal)  | [*] 2/INT0 [*]  [ ]  [*]     VIN[ ] |               |          *
         *          |               |            [ ]  [ ]  [ ]            |               |          *
         *          |               |            MISO SCK  RST            |               |          *
-        *         /                +--ATtiny88---------------------------+               \          *
-                                                PWR       NEU
-                                                RED      WHITE
-                                                
+        *          |               +--ATtiny88---------------------------+               |          *
+                   |                            PWR       NEU                            |
+                   |                            RED      WHITE                           |
+                   /                                                                     \
+                   
 Dia. 2: MD Board Underside * Dia. 3: Controller wire layout                      
        +-----------+       * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
        | 5 4 3 2 1 |       * |  P_D1 /1  |  P_D2 /2  |  P_D3 /3  +  P_D4 /4  +  P_D5 /5  +  P_D6 /6  +  P_D7 /7  +

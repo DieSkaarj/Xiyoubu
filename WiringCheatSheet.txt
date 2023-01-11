@@ -1,0 +1,36 @@
+                                        Xiyoubu Quick Reference Guide
+Dia. 1: Device layout
+
+ Colour * Port Ref.\ Connection                     Model                  Connection    / Port Ref.* Colour           
+        *          |                              +-------+                              |          *
+        *          |               +--------------|  USB  |--------------+               |          *
+        *          |               |              +-------+              |               |          *
+        *   P_A2   |               | [ ] 15                        14[ ] |               |   P_B7   *
+        *   P_A3   |               | [ ] 16                    SCK 13[*] | (RESERVED)    |   P_B5   * Green
+        *   P_A0   |               | [ ] A6                   MISO 12[*] | (RESERVED)    |   P_B4   * Black
+        *   P_A1   |               | [ ] A7                   MOSI 11[*] | (RESERVED)    |   P_B3   * Blue
+White   *   P_C0   | Reset Out     | [*] A0                     SS 10[*]~| (RESERVED)    |   P_B2   * Yellow
+Red     *   P_C1   | Reset In      | [*] A1                         9[ ]~|               |   P_B1   *
+Black   *   P_C2   | JP1/2 (JP/EN) | [*] A2                         8[ ] |               |   P_B0   *
+Red     *   P_C3   | JP3/4 (50/60) | [*] A3                         7[*] | Pad Right     |   P_D7   * Yellow
+Red     *   P_C4   | LED CR0       | [*] A4/SDA                     6[*] | Pad Left      |   P_D6   * Orange
+Blue    *   P_C5   | LED CR1       | [*] A5/SCL                     5[*] | Pad Down      |   P_D5   * Red
+        *   P_C7   |               | [ ] 25                         4[*] | Pad Up        |   P_D4   * Brown
+        *          |               | [ ] RST                   INT1/3[*] | Pad A/B       |   P_D3   * Blue
+        *   P_D0   |               | [ ] 0                         5V[ ] |               |          *
+White   *   P_D1   | Pad Start/C   | [*] 1      VCC  MOSI GND     GND[ ] |               |          *
+Grey    *   P_D2   | Pad (Signal)  | [*] 2/INT0 [*]  [ ]  [*]     VIN[ ] |               |          *
+        *          |               |            [ ]  [ ]  [ ]            |               |          *
+        *          |               |            MISO SCK  RST            |               |          *
+        *         /                +--ATtiny88---------------------------+               \          *
+                                                PWR       NEU
+                                                RED      WHITE
+                                                
+Dia. 2: MD Board Underside * Dia. 3: Controller wire layout                      
+       +-----------+       * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+       | 5 4 3 2 1 |       * |  P_D1 /1  |  P_D2 /2  |  P_D3 /3  +  P_D4 /4  +  P_D5 /5  +  P_D6 /6  +  P_D7 /7  +
+       \  9 8 7 6  /       * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
+         +-------+         * | 9:Start/C |  7:Signal |   6:A/B   |  4:Right  |  3:Left   |   2:Down  |   1:Up    |
+                           *  +----------+-----------+-----------+-----------+-----------+-----------+----------+
+
+Note: 8:GND (Unused,) 5:+5V (Unused)

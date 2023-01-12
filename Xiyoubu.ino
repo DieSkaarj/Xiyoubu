@@ -49,7 +49,7 @@ ISR(INT0_vect)
 
 void setup()
 {
-
+  /* Empty */
 }
 
 void loop()

@@ -37,7 +37,7 @@ Console::Console():
  *
  */
 
-void Console::console_restart()
+void Console::restart()
 {
   flash_led();
   CONSOLE &=~(0B1<<PINC0);
@@ -72,7 +72,7 @@ void Console::handle(const uint32_t t_delta)
 
   if( !reset )
   {
-    console_restart();
+    restart();
   }
 }
 

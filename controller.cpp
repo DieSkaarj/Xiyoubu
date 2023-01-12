@@ -9,7 +9,7 @@
 #define CONTROLLER_DDR DDRD
 #define CLEAR B00000000
 #define SELECT PIND2
-#define BUTTON_HOLD 5000U
+#define BUTTON_HOLD 500U
 
 /*
  *
@@ -73,8 +73,7 @@ void Controller::poll()
 
 void Controller::handle(const uint32_t delta)
 {
-  Console &md = console;
-  /*
+ /*
    * If lines connected to Left and Right are low the console asserts that a
    * 3BTN controller is present. These values are masked when handling,
    * as only the button presses are relevant here.
@@ -90,45 +89,30 @@ void Controller::handle(const uint32_t delta)
   if
   ( (status!=last_read ) )
   {
-    debounce=millis();
+    debounce=delta;
   }
 
   last_read=status;
 
   if
-  ( ( millis() - debounce > BUTTON_HOLD ) )
+  ( ( delta - debounce < BUTTON_HOLD ) )
     return;
 
   switch
   ( status )
   {
     case REGION_FWD:
-    {
-      md.reset_system \
-      (
-        static_cast<Console::ERegion> \
-        (md.region()+1) \
-      );
-      delay(500U);
-    }
+      console.reset_system( static_cast< Console::ERegion >( console.region()+1 ) );
     break;
 
     case REGION_BCK:
-    {
-      md.reset_system \
-      (
-        static_cast<Console::ERegion> \
-        (md.region()-1) \
-      );
-      delay(500U);
-    }
+      console.reset_system( static_cast< Console::ERegion >( console.region()-1 ) );
     break;
 
     case IGR:
-    {
-      md.console_restart();
-      md.flash_led();
-    }
+      console.restart();
     break;
   }
+
+  debounce=delta;
 }

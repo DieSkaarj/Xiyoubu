@@ -12,7 +12,7 @@ struct Console
 
   const ERegion region();
 
-  void console_restart();
+  void restart();
   void reset_system(const ERegion t_region);
   void flash_led();
   void handle(const uint32_t t_delta);

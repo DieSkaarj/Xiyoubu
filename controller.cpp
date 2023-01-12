@@ -52,18 +52,6 @@ void Controller::poll()
    * The controllers' port is an 8Bit register. To only manipulate the HIGH and LOW
    * bits a 255 (0xFF) mask is applied and inverted when necessary.
    */
-/*
-  if( signal )
-  {
-      _on_read &= (buttons|0xff);
-      _on_read |= (buttons<<8)&(~0xff);
-  }
-  else
-  {
-      _on_read &= (buttons<<8)&(~0xff);
-      _on_read |= (buttons&0xff);
-  }
-*/
   _on_read &= signal==false? \
   (buttons<<8)|(~0xff) : (buttons|0xff);
 

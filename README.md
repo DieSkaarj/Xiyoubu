@@ -23,5 +23,5 @@ You should have received a copy of the GNU General Public License along with thi
 - [ ] Use Guide
 
 ### Other Mega Drive related projects from the Author
-* Follow my Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj
+* Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj
 * BlastEd - Mega Drive/Genesis Art Tool: https://dieskaarj.itch.io/blasted

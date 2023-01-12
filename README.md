@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License along with thi
 ### Features
 - [X] Controller Region Cycling
 - [ ] Physical Region Cycling
-- [ ] In-Game Reset
+- [X] In-Game Reset
 - [ ] Overclock
 - [ ] Installation Walkthrough
 - [ ] Use Guide

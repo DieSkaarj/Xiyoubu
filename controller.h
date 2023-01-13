@@ -5,8 +5,8 @@ class Console;
 
 class Controller
 {
-  const uint8_t pad_mask{ 0b00000101 },
-                sig_mask{ 0b00000100 };
+  const static uint8_t  PAD_MASK{ 0b00000101 },
+                        SIG_MASK{ 0b00000100 };
 
   volatile uint16_t _on_read;
   Console           &console;

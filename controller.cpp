@@ -21,7 +21,7 @@ Controller::Controller(Console &t_console):
   console(t_console)
 {
   /*
-   *  Set Port D to input and clear pull-up resistors 
+   *  Set Port D to read and clear pull-up resistors 
    */
   CONTROLLER_DDR = CLEAR;
   CONTROLLER = CLEAR;

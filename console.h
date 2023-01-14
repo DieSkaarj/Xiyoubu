@@ -2,7 +2,10 @@
 #define _CONSOLE_H
 
 #include <stdint-gcc.h>
-#define _DEBUG
+
+/* Other than taking up space this uncommenting this probably won't do anything */
+
+//#define _DEBUG
 
 struct Console
 {

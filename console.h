@@ -3,8 +3,7 @@
 
 #include <stdint-gcc.h>
 
-/* Other than taking up space this uncommenting this probably won't do anything */
-
+/* Other than taking up space uncommenting this probably won't do anything */
 //#define _DEBUG
 
 struct Console

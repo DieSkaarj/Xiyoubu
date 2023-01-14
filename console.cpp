@@ -4,6 +4,8 @@
 
 #include "pins_arduino.h"
 
+#define _DEBUG
+
 #define CONSOLE PORTC
 #define CONSOLE_DDR DDRC
 #define CONSOLE_CONF 0b00111101
@@ -37,7 +39,7 @@ Console::Console():
   PCIFR = _BV(PCIF1);
   PCMSK1 = _BV(PCINT9); 
 
-  reconfigure( _region,_reconf_timer );
+  reconfigure( _region );
 }
 
 /*
@@ -67,7 +69,7 @@ void Console::restart()
   CONSOLE |=_BV( PINC0 );
 }
 
-void Console::reconfigure(const ERegion t_region,const uint32_t t_ticks)
+void Console::reconfigure(const ERegion t_region)
 {
   /*
     * Condition cycle ensures that the console region is between
@@ -86,9 +88,6 @@ void Console::reconfigure(const ERegion t_region,const uint32_t t_ticks)
   CONSOLE &= ~(0B1111<<SYSTEM);
   CONSOLE |= LIGHT(led[_region]);
   CONSOLE |= REGION(_region);
-
-  _reconf_timer=t_ticks;
-  _is_reconf=true;
 }
 
 void Console::handle( const uint32_t t_ticks )
@@ -101,12 +100,13 @@ void Console::handle( const uint32_t t_ticks )
   /*
    * Lookin' messy; might refactor later.
    */
+/*
   if( t_ticks-delta > 2000U && _is_reconf )
   {
     save_region();
     _is_reconf=false;
   }
-
+*/
 
   if
   ( count==1 && !is_reset_depressed )
@@ -127,7 +127,7 @@ void Console::handle( const uint32_t t_ticks )
     delta=t_ticks;
 
     if( count )
-      reconfigure( static_cast< ERegion >( region()+1 ),t_ticks );
+      reconfigure( static_cast< ERegion >( region()+1 ) );
 
     ++count;
   }

@@ -81,15 +81,23 @@ void Controller::handle(const uint32_t t_ticks)
   ( status )
   {
     case REGION_FWD:
-      console.reconfigure( static_cast< Console::ERegion >( console.region()+1 ),t_ticks );
+      console.reconfigure( static_cast< Console::ERegion >( console.region()+1 ) );
     break;
 
     case REGION_BCK:
-      console.reconfigure( static_cast< Console::ERegion >( console.region()-1 ),t_ticks );
+      console.reconfigure( static_cast< Console::ERegion >( console.region()-1 ) );
     break;
 
     case IGR:
       console.restart();
+    break;
+
+    case REGION_SAVE:
+      console.save_region();
+    break;
+
+    case REGION_LOAD:
+      console.reconfigure( console.load_region() );
     break;
   }
 

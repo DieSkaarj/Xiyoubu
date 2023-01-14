@@ -2,9 +2,7 @@
 #define _CONSOLE_H
 
 #include <stdint-gcc.h>
-
-/* Other than taking up space uncommenting this probably won't do anything */
-//#define _DEBUG
+#define _DEBUG
 
 struct Console
 {
@@ -22,8 +20,11 @@ struct Console
 
   void poll();
   void restart();
-  void reconfigure(const ERegion t_region,const uint32_t t_ticks);
+  void reconfigure(const ERegion t_region);
   void handle(const uint32_t t_ticks);
+
+  ERegion load_region();
+  void save_region();
 
 #ifdef _DEBUG
   void flash_led();
@@ -34,9 +35,6 @@ struct Console
   private:
 
   ERegion _region;
-
-  ERegion load_region();
-  void save_region();
 };
 
 #endif//_CONSOLE_H

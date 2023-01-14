@@ -45,7 +45,12 @@ static Controller pad(mega_drive);
 ISR(INT0_vect)
 {
   pad.poll();
-};
+}
+
+ISR(PCINT1_vect)
+{
+  mega_drive.poll();
+}
 
 void setup()
 {
@@ -54,6 +59,8 @@ void setup()
 
 void loop()
 {
-  mega_drive.handle(millis());
-  pad.handle(millis());
+  const uint32_t timer{ millis() };
+
+  mega_drive.handle( timer );
+  pad.handle( timer );
 }

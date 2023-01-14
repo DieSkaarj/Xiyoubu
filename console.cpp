@@ -4,12 +4,13 @@
 
 #define CONSOLE PORTC
 #define CONSOLE_DDR DDRC
-#define CONSOLE_CONF 0B00111101
+#define CONSOLE_CONF 0b00111101
+#define CONSOLE_INIT 0b00000011
 #define SYSTEM PINC2
 #define REGION(v) (v<<SYSTEM)
 #define LED PINC4
 #define LIGHT(v) (v<<LED)
-#define CLEAR B00000000
+#define RESET_HOLD 800U
 
 const uint8_t Console::led[4]
 {
@@ -26,7 +27,11 @@ Console::Console():
   _region(EUR)
 {
   CONSOLE_DDR = CONSOLE_CONF;  // Console Operators Reset/Lang/Video/LED 
-  CONSOLE = CLEAR;
+  CONSOLE = CONSOLE_INIT;
+
+  PCICR = _BV(PCIE1);
+  PCIFR = _BV(PCIF1);
+  PCMSK1 = _BV(PCINT9); 
 
   reset_system( EUR );
 }
@@ -37,12 +42,24 @@ Console::Console():
  *
  */
 
+void Console::poll()
+{
+  _reset=!_reset;
+  _is_pressed=_is_pressed&&~_reset?false:true;
+}
+
 void Console::restart()
 {
-  flash_led();
-  CONSOLE &=~(0B1<<PINC0);
-  delay(10U);
-  CONSOLE |=(0B1<<PINC0);
+  CONSOLE &=~( 0B1<<PINC0 );
+  /*
+   * After much thought and lots of navel gazing it was determined that 42
+   * was the best integer to supply the delay function with here.
+   */
+  delay(42U);
+  /*
+   * Re-engage that line!
+   */
+  CONSOLE |=_BV( PINC0 );
 }
 
 void Console::reset_system(const ERegion t_region)
@@ -66,14 +83,41 @@ void Console::reset_system(const ERegion t_region)
     CONSOLE |= REGION(_region);
 }
 
-void Console::handle(const uint32_t t_delta)
+void Console::handle( const uint32_t t_ticks )
 {
-  const bool reset{ PINC1 };
+  static uint32_t delta{ 0 };
+  static uint8_t count{ 0 };
+  const bool is_reset_depressed{ _is_pressed };
+  uint32_t debounce{ t_ticks-delta };
 
-  if( !reset )
+  /*
+   * Lookin' messy; might refactor later.
+   */
+  if
+  ( count==1 && !is_reset_depressed )
   {
     restart();
   }
+
+  if
+  ( !is_reset_depressed )
+  {
+    if( count ) count = 0;
+    return;
+  }
+
+  if
+  ( debounce > RESET_HOLD )
+  {
+    delta=t_ticks;
+
+    if( count )
+      reset_system( static_cast< ERegion >( region()+1 ) );
+
+    ++count;
+  }
+  else 
+    return;
 }
 
 const Console::ERegion Console::region()
@@ -81,8 +125,14 @@ const Console::ERegion Console::region()
   return _region;
 }
 
+#if _DEBUG
+
 void Console::flash_led()
 {
+  /*
+   * A completely superfluous function for debugging.
+   * The Xiyoubu equivalent of printf("HERE!");
+   */
   CONSOLE &= ~(0B11<<LED);
   CONSOLE |= LIGHT(LED_11);
   delay(100);
@@ -95,6 +145,8 @@ void Console::flash_led()
   CONSOLE &= ~(0B11<<LED);
   CONSOLE |= LIGHT(led[_region]);
 }
+
+#endif//DEBUG
 
 void Console::save_region()
 {

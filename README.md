@@ -2,13 +2,19 @@
 
 Xiyoubu is a hardware console mod for the Mega Drive/Genesis that targets ****MH-ATtiny88**** boards. It allows to change between 50Hz and 60Hz for video output (through scart) and enables language options for compatible software on the board. It also details a method for decreasing the power intake of the now retro unit by way of a USB-C power port.
 
+Xiyoubu will load the last saved profile on console power on.
+
 ***Xiyoubu has only been tested and confirmed working on a PAL Mega Drive II.***
 
 #### Controller
 - Menu: **(START + A + C)** + *[...]*
 - - **B**  - In-Game Reset
-- - **D-PAD RIGHT** - Region Cycle Forward
-- - **D-PAD LEFT** - Region Cycle Backward
+- - **D-PAD**
+- - - **RIGHT** - Region Cycle Forward
+- - - **LEFT** - Region Cycle Backward
+- - - **UP** - Save Region To Memory
+- - - **DOWN** - Load Region From Memory
+
 
 | LED | Region |
 |------|-----|

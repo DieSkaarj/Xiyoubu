@@ -4,8 +4,6 @@
 
 #include "pins_arduino.h"
 
-#define _DEBUG
-
 #define CONSOLE PORTC
 #define CONSOLE_DDR DDRC
 #define CONSOLE_CONF 0b00111101

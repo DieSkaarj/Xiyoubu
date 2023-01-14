@@ -9,7 +9,7 @@ Xiyoubu is a hardware console mod for the Mega Drive/Genesis that targets the MH
 - - **D-PAD LEFT** - Region Cycle Backward
 
 #### Console
-- Hold reset to cycle regions
+- Hold **RESET** to cycle regions
 - - Blue - USA
 - - Red - PAL
 - - Purple - JAP

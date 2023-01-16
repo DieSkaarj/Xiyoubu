@@ -55,7 +55,7 @@ inline REGION Console::load_region()
 
 inline void Console::save_region()
 {
-//  eeprom_update_byte(0,_region);
+  eeprom_update_byte(0,_region);
 }
 
 inline void Console::annul_press_counter()

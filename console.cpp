@@ -170,7 +170,6 @@ void Console::handle( const uint32_t t_ticks )
   }
 }
 
-
 #ifdef _DEBUG
 
 void Console::flash_led()

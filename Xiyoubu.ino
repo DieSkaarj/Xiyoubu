@@ -10,9 +10,9 @@
  * P_C1 | Reset Out     | [*] A1                         9[ ]~|               | P_B1
  * P_C2 | JP1/2 (JP/EN) | [*] A2                         8[ ] |               | P_B0
  * P_C3 | JP3/4 (50/60) | [*] A3                         7[*] | Pad Right     | P_D7   
- * P_C4 | @LED CR0      | [*] A4/SDA                     6[*] | Pad Left      | P_D6   
- * P_C5 | @LED CR1      | [*] A5/SCL                     5[*] | Pad Down      | P_D5
- * P_C7 | @LED CR2      | [*] 25                         4[*] | Pad Up        | P_D4
+ * P_C4 | LED CR0       | [*] A4/SDA                     6[*] | Pad Left      | P_D6   
+ * P_C5 | LED CR1       | [*] A5/SCL                     5[*] | Pad Down      | P_D5
+ * P_C7 |               | [ ] 25                         4[*] | Pad Up        | P_D4
  *      |               | [ ] RST                   INT1/3[*] | Pad C/Start   | P_D3
  * P_D0 |               | [ ] 0                         5V[ ] |               |
  * P_D1 | Pad A/B       | [*] 1      VCC  MOSI GND     GND[ ] |               |

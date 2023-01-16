@@ -16,11 +16,11 @@ Xiyoubu will load the last saved profile on console power on.
 - - - **DOWN** - Load Region From Memory
 
 
-| LED | Region |
-|------|-----|
-| Blue | USA |
-| Red  | PAL |
-| Purple | JAP |
+|Region|LED| 
+|---|---|
+|USA|Blue| 
+|PAL|Red|
+|JAP|Purple|
 
 #### Console
 - Hold **RESET** to cycle regions

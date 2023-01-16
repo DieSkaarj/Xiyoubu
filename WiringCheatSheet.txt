@@ -5,9 +5,9 @@ Dia. 1: Device layout
         *          |                              +-------+                              |          *
         *          |               +--------------|  USB  |--------------+               |          *
         *          |               |              +-------+              |               |          *
-        *   P_A2   |               | [ ] 15                        14[ ] |               |   P_B7   *
+        *   P_A2   |               | [ ] 15                        14[*] | (RESERVED)    |   P_B7   * Black
         *   P_A3   |               | [ ] 16                    SCK 13[*] | (RESERVED)    |   P_B5   * Green
-        *   P_A0   |               | [ ] A6                   MISO 12[*] | (RESERVED)    |   P_B4   * Black
+        *   P_A0   |               | [ ] A6                   MISO 12[ ] |               |   P_B4   * 
         *   P_A1   |               | [ ] A7                   MOSI 11[*] | (RESERVED)    |   P_B3   * Blue
 White   *   P_C0   | Reset Out     | [*] A0                     SS 10[*]~| (RESERVED)    |   P_B2   * Yellow
 Red     *   P_C1   | Reset In      | [*] A1                         9[ ]~|               |   P_B1   *

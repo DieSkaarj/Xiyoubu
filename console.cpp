@@ -1,6 +1,5 @@
 #include "console.h"
 #include "Arduino.h"
-#include <avr/eeprom.h>
 
 #include "pins_arduino.h"
 
@@ -11,15 +10,20 @@
 #define CONSOLE_CONF 0b00111101
 #define CONSOLE_INIT 0b00000011
 #define SYSTEM PINC2
-#define REGION(v) (v<<SYSTEM)
-#define LED PINC4
-#define LIGHT(v) (v<<LED)
-#define RESET_HOLD 800U
+#define SYSTEM_CLEAR ( CONSOLE &= ~(0B1111<<SYSTEM) )
+#define REGION(v) ( CONSOLE |= v<<SYSTEM )
+#define LED_PIN PINC4
+#define LED(v) ( CONSOLE &= ~(0B11<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
+#define LIGHT(v) (v<<LED_PIN)
+#define RESET_HOLD 1023U
 
 const uint8_t Console::led[4]
 {
     LED_00,LED_01,LED_11,LED_10
 };
+
+REGION Console::_region{ static_cast< REGION >( 0 ) };
+uint8_t Console::_press_reset_counter{ 0 };
 
 /*
  *
@@ -29,17 +33,17 @@ const uint8_t Console::led[4]
 
 Console::Console():
   _reconf_timer( 0 ),
-  _is_reconf( false ),
-  _region(load_region())
+  _is_reconf( false )
 {
-  CONSOLE_DDR = CONSOLE_CONF;  // Console Operators Reset/Lang/Video/LED 
+  CONSOLE_DDR = CONSOLE_CONF;
   CONSOLE = CONSOLE_INIT;
 
   PCICR = _BV(PCIE1);
   PCIFR = _BV(PCIF1);
   PCMSK1 = _BV(PCINT9); 
 
-  reconfigure( _region );
+  reconfigure( load_region() );
+  _press_reset_counter=0;
 }
 
 /*
@@ -49,10 +53,16 @@ Console::Console():
  */
 
 void Console::poll()
-{
+{  
+  /*
+   * _reset is set on CHANGE
+   * _is_pressed is used to test wether it
+   * was up or down.
+   */
   _reset=!_reset;
   _is_pressed=_is_pressed&&~_reset? \
   false : true;
+  if( _is_pressed ) _press_reset_counter++;
 }
 
 void Console::restart()
@@ -69,7 +79,7 @@ void Console::restart()
   CONSOLE |=_BV( PINC0 );
 }
 
-void Console::reconfigure(const ERegion t_region)
+void Console::reconfigure(const REGION t_region)
 {
   /*
     * Condition cycle ensures that the console region is between
@@ -85,60 +95,81 @@ void Console::reconfigure(const ERegion t_region)
   /*
     * Clear system bits then reset.
     */
-  CONSOLE &= ~(0B1111<<SYSTEM);
-  CONSOLE |= LIGHT(led[_region]);
-  CONSOLE |= REGION(_region);
+  SYSTEM_CLEAR;
+  LED(led[_region]);
+  REGION(_region);
 }
 
 void Console::handle( const uint32_t t_ticks )
 {
-  static uint32_t delta{ 0 };
-  static uint8_t count{ 0 };
-  const bool is_reset_depressed{ _is_pressed };
-  uint32_t debounce{ t_ticks-delta };
+  const bool is_held{ _is_pressed };
+  const uint8_t tap{ _press_reset_counter };
+  /* No time to explain! */
+  static uint32_t chronos,
+                  hold_timer,
+                  timeout;
+  static bool has_reconf{ false };
 
-  /*
-   * Lookin' messy; might refactor later.
-   */
-/*
-  if( t_ticks-delta > 2000U && _is_reconf )
+  switch
+  ( tap )
   {
-    save_region();
-    _is_reconf=false;
+    case NOT_TAPPED:
+    {
+      if( !is_held)
+      {
+        hold_timer=chronos=t_ticks;
+
+        if( has_reconf==true ) has_reconf=false; 
+      }
+    }
+    break;
+
+    case SINGLE_TAP:
+    {
+      if
+      ( is_held )
+      {
+        if
+        ( ( hold_timer-chronos ) > RESET_HOLD )
+        {
+          reconfigure( static_cast< REGION >( region()+1 ) );
+          has_reconf=true;
+          chronos=t_ticks;
+        }
+        else
+          hold_timer=t_ticks;
+
+        timeout=t_ticks;
+      }
+      else
+      /* Timeout */
+      if
+      ( ( t_ticks-timeout ) > RESET_HOLD )
+      {
+        if( has_reconf==false ) restart();
+
+        annul_press_counter();
+      }
+      else
+      if
+      ( has_reconf )
+        annul_press_counter();
+    }
+    break;
+
+    case DOUBLE_TAP:
+    {
+      save_region();
+      flash_led(LED_01);
+      flash_led(LED_10);
+      flash_led(LED_01);
+
+      annul_press_counter();
+    }
+    break;
   }
-*/
-
-  if
-  ( count==1 && !is_reset_depressed )
-  {
-    restart();
-  }
-
-  if
-  ( !is_reset_depressed )
-  {
-    if( count ) count = 0;
-    return;
-  }
-
-  if
-  ( debounce > RESET_HOLD )
-  {
-    delta=t_ticks;
-
-    if( count )
-      reconfigure( static_cast< ERegion >( region()+1 ) );
-
-    ++count;
-  }
-  else 
-    return;
 }
 
-const Console::ERegion Console::region()
-{
-  return _region;
-}
 
 #ifdef _DEBUG
 
@@ -148,29 +179,27 @@ void Console::flash_led()
    * A completely superfluous function for debugging.
    * The Xiyoubu equivalent of printf("HERE!");
    */
-  CONSOLE &= ~(0B11<<LED);
-  CONSOLE |= LIGHT(LED_11);
-  delay(100);
-  CONSOLE &= ~(0B11<<LED);
-  CONSOLE |= LIGHT(LED_10);
-  delay(100);
-  CONSOLE &= ~(0B11<<LED);
-  CONSOLE |= LIGHT(LED_01);
-  delay(100);
-  CONSOLE &= ~(0B11<<LED);
-  CONSOLE |= LIGHT(led[_region]);
+  for( int i{ 0 };i<9;++i)
+  {
+    for( int j{ 0 };j<3;++j)    
+    {
+      LED( 1+j );
+      delay(50);
+    }
+  }
+
+  LED(led[_region]);
+}
+
+void Console::flash_led( const LED t_led,const int t_time )
+{
+  for( int i{ 0 };i<t_time;++i)
+  {
+    LED(t_led);
+    delay(50);   
+  }
+
+  LED(led[_region]);
 }
 
 #endif//DEBUG
-
-Console::ERegion Console::load_region()
-{
-  ERegion region{ static_cast< ERegion >( eeprom_read_byte( 0 ) )};
-
-  return region;
-}
-
-void Console::save_region()
-{
-  eeprom_update_byte(0,_region);
-}

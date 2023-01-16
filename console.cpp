@@ -19,11 +19,7 @@
  * Init. static variables.
  */
 
-const uint8_t Console::led[4]
-{
-    LED_00,LED_01,LED_11,LED_10
-};
-
+const uint8_t Console::led[4]{ LED_00,LED_01,LED_11,LED_10 };
 REGION Console::_region{ static_cast< REGION >( 0 ) };
 uint8_t Console::_press_reset_counter{ 0 };
 
@@ -52,19 +48,6 @@ Console::Console()
  *
  */
 
-void Console::poll()
-{  
-  /*
-   * _reset is set on CHANGE
-   * _is_pressed is used to test wether it
-   * was up or down.
-   */
-  _reset=!_reset;
-  _is_pressed=_is_pressed&&~_reset? \
-  false : true;
-  if( _is_pressed ) _press_reset_counter++;
-}
-
 void Console::restart()
 {
   CONSOLE &=~( 0B1<<PINC0 );
@@ -77,6 +60,48 @@ void Console::restart()
    * Re-engage that line!
    */
   CONSOLE |=_BV( PINC0 );
+}
+
+void Console::flash_led() const
+{
+  /*
+   * A completely superfluous function for debugging.
+   * The Xiyoubu equivalent of printf("HERE!");
+   */
+  for( int i{ 0 };i<9;++i)
+  {
+    for( int j{ 0 };j<3;++j)    
+    {
+      LED( 1+j );
+      delay(50);
+    }
+  }
+
+  LED(led[_region]);
+}
+
+void Console::flash_led( const LED t_led,const int t_time ) const
+{
+  for( int i{ 0 };i<t_time;++i)
+  {
+    LED(t_led);
+    delay(50);   
+  }
+
+  LED(led[_region]);
+}
+
+void Console::poll()
+{  
+  /*
+   * _reset is set on CHANGE
+   * _is_pressed is used to test wether it
+   * was up or down.
+   */
+  _reset=!_reset;
+  _is_pressed=_is_pressed&&~_reset? \
+  false : true;
+  if( _is_pressed ) _press_reset_counter++;
 }
 
 void Console::reconfigure(const REGION t_region)
@@ -168,33 +193,4 @@ void Console::handle( const uint32_t t_ticks )
     }
     break;
   }
-}
-
-void Console::flash_led() const
-{
-  /*
-   * A completely superfluous function for debugging.
-   * The Xiyoubu equivalent of printf("HERE!");
-   */
-  for( int i{ 0 };i<9;++i)
-  {
-    for( int j{ 0 };j<3;++j)    
-    {
-      LED( 1+j );
-      delay(50);
-    }
-  }
-
-  LED(led[_region]);
-}
-
-void Console::flash_led( const LED t_led,const int t_time ) const
-{
-  for( int i{ 0 };i<t_time;++i)
-  {
-    LED(t_led);
-    delay(50);   
-  }
-
-  LED(led[_region]);
 }

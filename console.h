@@ -8,22 +8,20 @@
 
 struct Console
 {
+  const static uint8_t led[4];
   volatile bool _reset,_is_pressed;
 
-  const static uint8_t led[4];
+  static void restart();
+  static REGION load_region();
 
   const REGION region() const;
+  void save_region() const;
+  void flash_led() const;
+  void flash_led( const LED,const int=3 ) const;
 
-  void static restart();
   void poll();
   void reconfigure(const REGION t_region);
   void handle(const uint32_t t_ticks);
-
-  static REGION load_region();
-  void save_region() const;
-
-  void flash_led() const;
-  void flash_led( const LED,const int=3 ) const;
 
   Console();
 
@@ -35,14 +33,14 @@ struct Console
   static void annul_press_counter();
 };
 
-inline const REGION Console::region() const
-{
-  return _region;
-}
-
 inline REGION Console::load_region()
 {
   return static_cast< REGION >( eeprom_read_byte( 0 ) );
+}
+
+inline const REGION Console::region() const
+{
+  return _region;
 }
 
 inline void Console::save_region() const

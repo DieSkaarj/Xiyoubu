@@ -36,7 +36,6 @@ struct Console
 
   private:
 
-  static void led(const LED) const;
   static REGION _region;
   static uint8_t _press_reset_counter;
 

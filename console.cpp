@@ -3,8 +3,6 @@
 
 #include "pins_arduino.h"
 
-#define _DEBUG
-
 #define CONSOLE PORTC
 #define CONSOLE_DDR DDRC
 #define CONSOLE_CONF 0b00111101
@@ -15,7 +13,11 @@
 #define LED_PIN PINC4
 #define LED(v) ( CONSOLE &= ~(0B11<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
 #define LIGHT(v) (v<<LED_PIN)
-#define RESET_HOLD 1023U
+#define RESET_HOLD 800U
+
+/*
+ * Init. static variables.
+ */
 
 const uint8_t Console::led[4]
 {
@@ -31,9 +33,7 @@ uint8_t Console::_press_reset_counter{ 0 };
  *
  */
 
-Console::Console():
-  _reconf_timer( 0 ),
-  _is_reconf( false )
+Console::Console()
 {
   CONSOLE_DDR = CONSOLE_CONF;
   CONSOLE = CONSOLE_INIT;
@@ -170,9 +170,7 @@ void Console::handle( const uint32_t t_ticks )
   }
 }
 
-#ifdef _DEBUG
-
-void Console::flash_led()
+void Console::flash_led() const
 {
   /*
    * A completely superfluous function for debugging.
@@ -190,7 +188,7 @@ void Console::flash_led()
   LED(led[_region]);
 }
 
-void Console::flash_led( const LED t_led,const int t_time )
+void Console::flash_led( const LED t_led,const int t_time ) const
 {
   for( int i{ 0 };i<t_time;++i)
   {
@@ -200,5 +198,3 @@ void Console::flash_led( const LED t_led,const int t_time )
 
   LED(led[_region]);
 }
-
-#endif//DEBUG

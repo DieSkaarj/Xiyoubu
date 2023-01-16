@@ -6,18 +6,13 @@
 
 #include "enumerations.h"
 
-#define _DEBUG
-
 struct Console
 {
   volatile bool _reset,_is_pressed;
 
   const static uint8_t led[4];
 
-  uint32_t _reconf_timer;
-  bool _is_reconf;
-
-  const REGION region();
+  const REGION region() const;
 
   void static restart();
   void poll();
@@ -25,12 +20,10 @@ struct Console
   void handle(const uint32_t t_ticks);
 
   static REGION load_region();
-  void save_region();
+  void save_region() const;
 
-#ifdef _DEBUG
-  void flash_led();
-#endif//_DEBUG
-  void flash_led( const LED,const int=3 );
+  void flash_led() const;
+  void flash_led( const LED,const int=3 ) const;
 
   Console();
 
@@ -42,7 +35,7 @@ struct Console
   static void annul_press_counter();
 };
 
-inline const REGION Console::region()
+inline const REGION Console::region() const
 {
   return _region;
 }
@@ -52,7 +45,7 @@ inline REGION Console::load_region()
   return static_cast< REGION >( eeprom_read_byte( 0 ) );
 }
 
-inline void Console::save_region()
+inline void Console::save_region() const
 {
   eeprom_update_byte(0,_region);
 }

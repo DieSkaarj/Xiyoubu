@@ -39,8 +39,6 @@
 #include "console.h"
 #include "controller.h"
 
-#define _DEBUG
-
 static Console    mega_drive;
 static Controller pad(mega_drive);
 

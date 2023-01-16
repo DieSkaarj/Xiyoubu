@@ -28,7 +28,7 @@ Xiyoubu will load the last saved profile on console power on.
 - **Tap twice** to save region
 
 ### Status
-- Needs more Blast, to make your Mega Drive an ÜBER DRIVE. But, other than that it's working as intended. Will endeavour to make it portable... in the near future.
+- Needs more Blast, to make your Mega Drive an ÜBER DRIVE. But, other than that it's working as intended. Will endeavour to make it configurable... in the near future.
 
 ### Features
 - [X] Controller Region Cycling

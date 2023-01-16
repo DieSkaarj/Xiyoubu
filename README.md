@@ -24,6 +24,8 @@ Xiyoubu will load the last saved profile on console power on.
 
 #### Console
 - Hold **RESET** to cycle regions
+- **Tap once** to reset
+- **Tap twice** to save region
 
 ### Status
 - Needs more Blast, to make your Mega Drive an ÜBER DRIVE. But, other than that it's working as intended. Will endeavour to make it portable... in the near future.

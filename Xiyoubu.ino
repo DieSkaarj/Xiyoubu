@@ -38,11 +38,12 @@
 
 #include "console.h"
 #include "controller.h"
+#include "overclock.h"
 
 static Console    mega_drive;
 static Controller pad(mega_drive);
 
-ISR(INT0_vect)
+ISR(INT1_vect)
 {
   pad.poll();
 }
@@ -54,7 +55,7 @@ ISR(PCINT1_vect)
 
 void setup()
 {
-  /* Empty */
+//  mega_drive.init_clock();
 }
 
 void loop()

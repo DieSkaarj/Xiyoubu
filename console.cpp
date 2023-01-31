@@ -1,17 +1,17 @@
 #include "console.h"
-#include "Arduino.h"
+#include <SPI.h>
 
 #include "pins_arduino.h"
 
 #define CONSOLE PORTC
 #define CONSOLE_DDR DDRC
-#define CONSOLE_CONF 0b00111101
-#define CONSOLE_INIT 0b00000011
+#define CONSOLE_CONF 0b10111110
+#define CONSOLE_INIT 0b00000001
 #define SYSTEM PINC2
-#define SYSTEM_CLEAR ( CONSOLE &= ~(0B1111<<SYSTEM) )
+#define SYSTEM_CLEAR ( CONSOLE &= ~(0B101111<<SYSTEM) )
 #define REGION(v) ( CONSOLE |= v<<SYSTEM )
 #define LED_PIN PINC4
-#define LED(v) ( CONSOLE &= ~(0B11<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
+#define LED(v) ( CONSOLE &= ~(0B1011<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
 #define LIGHT(v) (v<<LED_PIN)
 #define RESET_HOLD 800U
 
@@ -19,10 +19,10 @@
  * Init. static variables.
  */
 
-const uint8_t Console::led[4]{ LED_00,LED_01,LED_11,LED_10 };
-REGION Console::_region{ static_cast< REGION >( 0 ) };
+const uint8_t Console::led[4]{ OFF,BLUE|RED,RED,BLUE };
+REGION Console::_region{ static_cast< REGION >( load_region() ) };
 uint8_t Console::_press_reset_counter{ 0 };
-
+OverClock Console::_clock;
 /*
  *
  * CTORS
@@ -35,11 +35,11 @@ Console::Console()
   CONSOLE = CONSOLE_INIT;
 
   PCICR = _BV(PCIE1);
-  PCIFR = _BV(PCIF1);
-  PCMSK1 = _BV(PCINT9); 
+  PCMSK1 = _BV(PCINT8); 
+  PCIFR |= _BV(PCIF1);
 
-  reconfigure( load_region() );
-  _press_reset_counter=0;
+  reconfigure( _region );
+  annul_press_counter();
 }
 
 /*
@@ -48,9 +48,21 @@ Console::Console()
  *
  */
 
+void Console::init_clock()
+{
+  SPI.begin();
+
+  _clock.halt( true );
+  delay(50);
+  _clock.reset();
+  delay(50);
+  _clock.set_frequency( OverClock::base );
+  _clock.halt( false );
+}
+
 void Console::restart()
 {
-  CONSOLE &=~( 0B1<<PINC0 );
+  CONSOLE &=~( 0B1<<PINC1 );
   /*
    * After much thought and lots of navel gazing it was determined that 42
    * was the best integer to supply the delay function with here.
@@ -59,7 +71,21 @@ void Console::restart()
   /*
    * Re-engage that line!
    */
-  CONSOLE |=_BV( PINC0 );
+  CONSOLE |=_BV( PINC1 );
+}
+
+
+void Console::overclock( float amt )
+{
+/*  flash_led( GREEN|BLUE,10 );
+
+  float freq{  };
+  if( freq+amt > 125e+5 
+  || freq+amt < 7e+6 ) return;
+
+  halt( true );
+  _clock.IncrementFrequency( REG0,amt );
+  halt( false );*/
 }
 
 void Console::flash_led() const
@@ -92,14 +118,14 @@ void Console::flash_led( const LED t_led,const int t_time ) const
 }
 
 void Console::poll()
-{  
+{
   /*
    * _reset is set on CHANGE
-   * _is_pressed is used to test wether it
-   * was up or down.
+   * _is_pressed is used to cut noise on up.
    */
   _reset=!_reset;
-  _is_pressed=_is_pressed&&~_reset? \
+
+  _is_pressed=_is_pressed&&!_reset? \
   false : true;
   if( _is_pressed ) _press_reset_counter++;
 }
@@ -111,9 +137,9 @@ void Console::reconfigure(const REGION t_region)
     * valid region codes.
     */
   if
-    ( t_region < EUR ) _region = USA;
+    ( t_region < JAP ) _region = USA;
   else if
-    ( t_region > USA ) _region = EUR;
+    ( t_region > USA ) _region = JAP;
   else
     _region=t_region;
 
@@ -167,7 +193,6 @@ void Console::handle( const uint32_t t_ticks )
         timeout=t_ticks;
       }
       else
-      /* Timeout */
       if
       ( ( t_ticks-timeout ) > RESET_HOLD )
       {
@@ -185,10 +210,6 @@ void Console::handle( const uint32_t t_ticks )
     case DOUBLE_TAP:
     {
       save_region();
-      flash_led(LED_01);
-      flash_led(LED_10);
-      flash_led(LED_01);
-
       annul_press_counter();
     }
     break;

@@ -3,13 +3,14 @@
 
 #include "controller.h"
 #include "console.h"
+#include "overclock.h"
 
 #define CONTROLLER PORTD
 #define CONTROLLER_READ PIND
 #define CONTROLLER_DDR DDRD
 #define CONTROLLER_CONF 0b00000000
-#define CONTROLLER_INIT 0b00000000
-#define SELECT PIND2
+#define CONTROLLER_INIT 0b00001000
+#define SELECT PIND3
 #define BUTTON_HOLD 500U
 
 /*
@@ -29,8 +30,8 @@ Controller::Controller(Console &t_console):
   /*
    * Set interrupt mode to logical CHANGE on INT0 (pin18/D2.)
    */
-  EICRA = _BV(ISC00);
-  EIMSK = _BV(INT0);
+  EICRA = _BV(ISC10);
+  EIMSK = _BV(INT1);
 
   sei();      
 }
@@ -66,6 +67,7 @@ void Controller::handle(const uint32_t t_ticks)
    * 3BTN controller is present. These values are masked when handling,
    * as only the button presses are relevant here.
    */
+
   static uint16_t last_read{ 0 };
   static uint32_t delta{ BUTTON_HOLD };
   const uint16_t  status{ ( _on_read&(  ~PAD3 ) ) };
@@ -80,6 +82,14 @@ void Controller::handle(const uint32_t t_ticks)
   switch
   ( status )
   {
+    case OC_INC:
+//     console.overclock( Console::step );
+    break;
+
+    case OC_DEC:
+//     console.overclock( -Console::step );
+    break;
+ 
     case REGION_FWD:
       console.reconfigure( static_cast< REGION >( console.region()+1 ) );
     break;

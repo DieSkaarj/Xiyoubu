@@ -5,8 +5,8 @@ class Console;
 
 class Controller
 {
-  const static uint8_t  PAD_MASK{ 0b00000101 },
-                        SIG_MASK{ 0b00000100 };
+  const static uint8_t  PAD_MASK{ 0b00001001 },
+                        SIG_MASK{ 0b00001000 };
 
   volatile uint16_t _on_read;
   Console           &console;
@@ -17,12 +17,12 @@ class Controller
   enum : int16_t
   {
     START = _BV(1),
-    A = _BV(3),
+    A = _BV(2),
     UP_LO = _BV(4),
     DOWN_LO = _BV(5),
     PAD3 = (0B11 << 6),
     C = _BV(9),
-    B = _BV(11),
+    B = _BV(10),
     UP_HI = _BV(12),
     DOWN_HI = _BV(13),
     LEFT = _BV(14),

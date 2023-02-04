@@ -1,25 +1,34 @@
 /*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *   Mo'Board underside pin               > +------+------+ <
- *          layout            Truth Table > |  +5V | GND  | < EUR = 01
- *       +-----------+             for    > +------+------+ < JAP = 10
- *       | 5 4 3 2 1 |           Jumpers  > |  ENG | JAP  | < USA = 11
- *       \  9 8 7 6  /                    > | 60Hz | 50Hz | <
- *         +-------+                      > +------+------+ <
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
- * + 9:Start/C |  7:Signal |   6:A/B   |  4:Right  |  3:Left   |   2:Down  |   1:Up    |
- * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
- *    Note: 5:+5V, 8:GND
+ * You should have received a copy of the LSST License Statement and
+ * the GNU General Public License along with this program. If not,
+ * see <http://www.lsstcorp.org/LegalNotices/>.
  *
+ *
+ *  File: main.cpp
+ *  
+ *  Desc: Entrance
+ *
+ *  Author: David A. Cummings (David Oberlin)
+ *  Contact: davidandrewcummings@hotmail.co.uk
+ *  
  */
 
 #include "console.h"
 #include "controller.h"
 #include "overclock.h"
 
-static Console    *mega_drive;
-static Controller *pad;
+Console    *mega_drive;
+Controller *pad;
 
 ISR(INT1_vect)
 {
@@ -29,11 +38,6 @@ ISR(INT1_vect)
 ISR(PCINT1_vect)
 {
   mega_drive->poll();
-}
-
-void setup()
-{
-//  mega_drive.init_clock();
 }
 
 void destroy( void* t_thing )
@@ -46,14 +50,14 @@ int main()
 {
   sei();
 
+  mega_drive = new Console( millis() );
+  pad = new Controller( *mega_drive );
+
   PCICR = _BV(PCIE1);
   PCMSK1 = _BV(PCINT8); 
   PCIFR |= _BV(PCIF1);
 
   init();
-
-  mega_drive = new Console( millis() );
-  pad = new Controller( *mega_drive );
 
   while( true )
   {
@@ -63,8 +67,8 @@ int main()
     mega_drive->handle( timer );
   }
 
-  destroy( mega_drive );
   destroy( pad );
+  destroy( mega_drive );
 
   return 0;
 }

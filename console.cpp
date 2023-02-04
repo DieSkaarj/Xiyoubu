@@ -121,7 +121,7 @@ void Console::poll()
    * _reset is set on CHANGE
    * _is_pressed is used to cut noise on up.
    */
-  _reset=!_reset;
+  _reset=( PINC0&0x1 );
 
   _is_pressed=_is_pressed&&~_reset? \
   false : true;

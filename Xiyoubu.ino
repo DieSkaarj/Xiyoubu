@@ -1,5 +1,4 @@
 /*
- *                                   PWR       NEU
  *
  *   Mo'Board underside pin               > +------+------+ <
  *          layout            Truth Table > |  +5V | GND  | < EUR = 01

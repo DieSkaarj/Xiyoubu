@@ -21,7 +21,6 @@
 
 const uint8_t Console::led[4]{ OFF,BLUE|RED,RED,BLUE };
 REGION Console::_region{ static_cast< REGION >( load_region() ) };
-uint8_t Console::_press_reset_counter{ 0 };
 OverClock Console::_clock;
 /*
  *
@@ -29,17 +28,16 @@ OverClock Console::_clock;
  *
  */
 
-Console::Console()
+Console::Console( const uint32_t t_ticks ):
+  _press_reset_counter( 0 ),
+  _chronos( t_ticks ),_hold_timer( t_ticks ),
+  _timeout( t_ticks ),_has_reconf( false ),
+  _is_pressed( false )
 {
   CONSOLE_DDR = CONSOLE_CONF;
   CONSOLE = CONSOLE_INIT;
 
-  PCICR = _BV(PCIE1);
-  PCMSK1 = _BV(PCINT8); 
-  PCIFR |= _BV(PCIF1);
-
   reconfigure( _region );
-  annul_press_counter();
 }
 
 /*
@@ -125,7 +123,7 @@ void Console::poll()
    */
   _reset=!_reset;
 
-  _is_pressed=_is_pressed&&!_reset? \
+  _is_pressed=_is_pressed&&~_reset? \
   false : true;
   if( _is_pressed ) _press_reset_counter++;
 }
@@ -155,11 +153,6 @@ void Console::handle( const uint32_t t_ticks )
 {
   const bool is_held{ _is_pressed };
   const uint8_t tap{ _press_reset_counter };
-  /* No time to explain! */
-  static uint32_t chronos,
-                  hold_timer,
-                  timeout;
-  static bool has_reconf{ false };
 
   switch
   ( tap )
@@ -168,9 +161,9 @@ void Console::handle( const uint32_t t_ticks )
     {
       if( !is_held)
       {
-        hold_timer=chronos=t_ticks;
+        if( _has_reconf==true ) _has_reconf=false; 
 
-        if( has_reconf==true ) has_reconf=false; 
+        _hold_timer=_chronos=t_ticks;
       }
     }
     break;
@@ -181,36 +174,38 @@ void Console::handle( const uint32_t t_ticks )
       ( is_held )
       {
         if
-        ( ( hold_timer-chronos ) > RESET_HOLD )
+        ( ( _hold_timer-_chronos ) > RESET_HOLD )
         {
           reconfigure( static_cast< REGION >( region()+1 ) );
-          has_reconf=true;
-          chronos=t_ticks;
+          _has_reconf=true;
+          _chronos=t_ticks;
         }
         else
-          hold_timer=t_ticks;
+          _hold_timer=t_ticks;
 
-        timeout=t_ticks;
+        _timeout=t_ticks;
       }
       else
       if
-      ( ( t_ticks-timeout ) > RESET_HOLD )
+      ( ( t_ticks-_timeout ) > RESET_HOLD )
       {
-        if( has_reconf==false ) restart();
+        if( _has_reconf==false ) restart();
 
-        annul_press_counter();
+        clear_tap( t_ticks );
       }
       else
       if
-      ( has_reconf )
-        annul_press_counter();
+      ( _has_reconf )
+      {
+        clear_tap( t_ticks );
+      }
     }
     break;
 
     case DOUBLE_TAP:
     {
+      clear_tap( t_ticks );
       save_region();
-      annul_press_counter();
     }
     break;
   }

@@ -40,17 +40,17 @@
 #include "controller.h"
 #include "overclock.h"
 
-static Console    mega_drive;
-static Controller pad(mega_drive);
+static Console    *mega_drive;
+static Controller *pad;
 
 ISR(INT1_vect)
 {
-  pad.poll();
+  pad->poll();
 }
 
 ISR(PCINT1_vect)
 {
-  mega_drive.poll();
+  mega_drive->poll();
 }
 
 void setup()
@@ -58,10 +58,35 @@ void setup()
 //  mega_drive.init_clock();
 }
 
-void loop()
+void destroy( void* t_thing )
 {
-  const uint32_t timer{ millis() };
+  delete t_thing;
+  t_thing = nullptr;
+}
 
-  mega_drive.handle( timer );
-  pad.handle( timer );
+int main()
+{
+  sei();
+
+  PCICR = _BV(PCIE1);
+  PCMSK1 = _BV(PCINT8); 
+  PCIFR |= _BV(PCIF1);
+
+  init();
+
+  mega_drive = new Console( millis() );
+  pad = new Controller( *mega_drive );
+
+  while( true )
+  {
+    const uint32_t timer{ millis() };
+
+    pad->handle( timer );
+    mega_drive->handle( timer );
+  }
+
+  destroy( mega_drive );
+  destroy( pad );
+
+  return 0;
 }

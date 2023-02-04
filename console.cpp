@@ -13,13 +13,13 @@
 #define LED_PIN PINC4
 #define LED(v) ( CONSOLE &= ~(0B1011<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
 #define LIGHT(v) (v<<LED_PIN)
-#define RESET_HOLD 800U
+#define RESET_HOLD 1300U
 
 /*
  * Init. static variables.
  */
 
-const uint8_t Console::led[4]{ OFF,BLUE|RED,RED,BLUE };
+const uint8_t Console::led[4]{ OFF,BLUE|RED,RED,GREEN|BLUE };
 REGION Console::_region{ static_cast< REGION >( load_region() ) };
 OverClock Console::_clock;
 /*
@@ -157,17 +157,6 @@ void Console::handle( const uint32_t t_ticks )
   switch
   ( tap )
   {
-    case NOT_TAPPED:
-    {
-      if( !is_held)
-      {
-        if( _has_reconf==true ) _has_reconf=false; 
-
-        _hold_timer=_chronos=t_ticks;
-      }
-    }
-    break;
-
     case SINGLE_TAP:
     {
       if
@@ -197,7 +186,7 @@ void Console::handle( const uint32_t t_ticks )
       if
       ( _has_reconf )
       {
-        clear_tap( t_ticks );
+        clear_tap( t_ticks );        
       }
     }
     break;
@@ -208,5 +197,10 @@ void Console::handle( const uint32_t t_ticks )
       save_region();
     }
     break;
+  }
+
+  if( !is_held )
+  {
+    _hold_timer=_chronos=t_ticks;
   }
 }

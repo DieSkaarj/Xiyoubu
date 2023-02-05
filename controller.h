@@ -16,12 +16,12 @@ class Controller
  */
   enum : int16_t
   {
-    START = _BV(1),
+    C = _BV(1),
     A = _BV(2),
     UP_LO = _BV(4),
     DOWN_LO = _BV(5),
     PAD3 = (0B11 << 6),
-    C = _BV(9),
+    START = _BV(9),
     B = _BV(10),
     UP_HI = _BV(12),
     DOWN_HI = _BV(13),
@@ -34,8 +34,8 @@ class Controller
     SYSTEM_MENU{ START | A | C },
     OVERCLOCK_MENU{ START | B },
     OC_INC{ OVERCLOCK_MENU | UP_LO },
-    OC_DEC{ OVERCLOCK_MENU | DOWN_LO },
-    OC_CHECKUP{ OVERCLOCK_MENU | UP_LO },
+    OC_DEC{ OVERCLOCK_MENU | DOWN_HI },
+    OC_CHECKUP{ OVERCLOCK_MENU | UP_HI },
     REGION_FWD{ SYSTEM_MENU | RIGHT },
     REGION_BCK{ SYSTEM_MENU | LEFT },
     REGION_SAVE{ SYSTEM_MENU | UP_HI },

@@ -28,13 +28,10 @@ Controller::Controller(Console &t_console):
   CONTROLLER_DDR = CONTROLLER_CONF;
   CONTROLLER = CONTROLLER_INIT;
   /*
-   * Set interrupt mode to logical CHANGE on INT1 (pin18/D2)
-   * attiny88-pin18 is attached to controller select (controller-pin7.)
+   * Set interrupt mode to logical CHANGE on INT0 (pin18/D2.)
    */
   EICRA = _BV(ISC10);
-  EIMSK = _BV(INT1);
-
-  sei();      
+  EIMSK = _BV(INT1);     
 }
 
 /*

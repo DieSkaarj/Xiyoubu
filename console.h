@@ -25,6 +25,8 @@ struct Console
   void reconfigure(const REGION t_region);
   void handle(const uint32_t t_ticks);
 
+  void annul_counter(){ _press_reset_counter=0; }
+
   Console( const uint32_t );
 
   private:

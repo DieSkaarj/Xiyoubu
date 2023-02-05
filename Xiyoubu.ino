@@ -40,7 +40,7 @@ ISR(PCINT1_vect)
   mega_drive->poll();
 }
 
-void destroy( void* t_thing )
+void destroy( void *t_thing )
 {
   delete t_thing;
   t_thing = nullptr;
@@ -54,6 +54,8 @@ int main()
   pad = new Controller( *mega_drive );
 
   init();
+
+//  mega_drive->restart();
 
   while( true )
   {

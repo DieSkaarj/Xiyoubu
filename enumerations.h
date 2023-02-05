@@ -10,6 +10,16 @@ enum RESET_PRESS_TYPE
 };
 
 enum REGION : uint8_t{ NIL = 0x00,JAP = 0x01,EUR = 0x02,USA = 0x03 };
-enum LED : uint8_t{ OFF = 0b0000,RED = 0b0001,GREEN = 0b0010,BLUE = 0b1000 };
+enum LED : uint8_t
+{
+  LED_OFF = 0b0000,
+  RED = 0b0001,
+  GREEN = 0b0010,
+  YELLOW = 0b0011,
+  BLUE = 0b1000,
+  MAGENTA = 0b1001,
+  CYAN = 0b1010,
+  WHITE = 0b1011
+};
 
 #endif//_ENUMERATIONS_H

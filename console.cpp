@@ -6,7 +6,7 @@
 #define CONSOLE PORTC
 #define CONSOLE_DDR DDRC
 #define CONSOLE_CONF 0b10111110
-#define CONSOLE_INIT 0b00000001
+#define CONSOLE_INIT 0b00000011
 #define SYSTEM PINC2
 #define SYSTEM_CLEAR ( CONSOLE &= ~(0B101111<<SYSTEM) )
 #define REGION(v) ( CONSOLE |= v<<SYSTEM )
@@ -19,7 +19,7 @@
  * Init. static variables.
  */
 
-const uint8_t Console::led[4]{ OFF,BLUE|RED,RED,GREEN|RED };
+const uint8_t Console::led[4]{ LED_OFF,MAGENTA,RED,CYAN };
 REGION Console::_region{ static_cast< REGION >( load_region() ) };
 OverClock Console::_clock;
 /*
@@ -39,9 +39,9 @@ Console::Console( const uint32_t t_ticks ):
 
   reconfigure( _region );
 
-  PCICR = _BV(PCIE1);
-  PCIFR |= _BV(PCIF1);
-  PCMSK1 = _BV(PCINT8);
+  PCICR = _BV( PCIE1 );
+  PCIFR |= _BV( PCIF1 );
+  PCMSK1 = _BV( PCINT8 );
 }
 
 /*
@@ -52,7 +52,7 @@ Console::Console( const uint32_t t_ticks ):
 
 void Console::restart()
 {
-  CONSOLE &=~( 0B1<<PINC1 );
+  CONSOLE &=~_BV( PINC1 );
   /*
    * After much thought and lots of navel gazing it was determined that 42
    * was the best integer to supply the delay function with here.
@@ -89,22 +89,22 @@ void Console::flash_led() const
     for( int j{ 0 };j<3;++j)    
     {
       LED( 1+j );
-      delay(50);
+      delay( 50 );
     }
   }
 
-  LED(led[_region]);
+  LED( led[_region] );
 }
 
 void Console::flash_led( const LED t_led,const int t_time ) const
 {
   for( int i{ 0 };i<t_time;++i)
   {
-    LED(t_led);
+    LED( t_led );
     delay(50);   
   }
 
-  LED(led[_region]);
+  LED( led[_region] );
 }
 
 void Console::poll()

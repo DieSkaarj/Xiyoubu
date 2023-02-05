@@ -18,9 +18,9 @@ Xiyoubu will load the last saved profile on console power on.
 
 |Region|LED| 
 |---|---|
-|USA|Blue| 
+|USA|Cyan| 
 |PAL|Red|
-|JAP|Purple|
+|JAP|Magenta|
 
 #### Console
 - Hold **RESET** to cycle regions

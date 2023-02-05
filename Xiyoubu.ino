@@ -53,10 +53,6 @@ int main()
   mega_drive = new Console( millis() );
   pad = new Controller( *mega_drive );
 
-  PCICR = _BV(PCIE1);
-  PCMSK1 = _BV(PCINT8); 
-  PCIFR |= _BV(PCIF1);
-
   init();
 
   while( true )

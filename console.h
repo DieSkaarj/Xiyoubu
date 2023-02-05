@@ -24,7 +24,6 @@ struct Console
   void poll();
   void reconfigure(const REGION t_region);
   void handle(const uint32_t t_ticks);
-  void init_clock();
 
   Console( const uint32_t );
 
@@ -33,11 +32,9 @@ struct Console
   static OverClock _clock;
   static REGION _region;
   uint8_t _press_reset_counter;
-  uint32_t _chronos,_hold_timer,_timeout;
+  uint32_t _chronos,_timer_a,_timer_b;
   bool _has_reconf,_is_pressed;
   volatile bool _reset;
-
-  void clear_tap( const uint32_t );
 };
 
 inline REGION Console::load_region()
@@ -64,12 +61,6 @@ inline void Console::save_region() const
   delay( 200 );
   PORTC &= ~(0B1011<<PINC4);
   PORTC |= ( led[ _region ] )<<PINC4;
-}
-
-inline void Console::clear_tap( const uint32_t t_ticks )
-{
-  _timeout=t_ticks;
-  _press_reset_counter=0;
 }
 
 #endif//_CONSOLE_H

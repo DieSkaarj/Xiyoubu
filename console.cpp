@@ -13,7 +13,7 @@
 #define LED(v) ( CONSOLE &= ~(0B1011<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
 
 #define RESET_HOLD 1300U
-#define FNC_PIN 8
+#define FNC_PIN 10
 /*
  * Init. static variables.
  */

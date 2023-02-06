@@ -55,8 +55,8 @@ struct Console
 
 inline void Console::halt( bool v )
 {
-  if( v ) CLOCK |= _BV( PINB7 );
-  else CLOCK &= ~_BV( PINB7 );
+  if( v ) CLOCK |= _BV( PINB0 );
+  else CLOCK &= ~_BV( PINB0 );
 }
 
 inline REGION Console::load_region()

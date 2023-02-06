@@ -8,12 +8,9 @@
 #include "enumerations.h"
 
 #ifdef OVERCLOCK
-
   #include <AD9833.h>
-
+  #define CLOCK PORTB
 #endif
-
-#define CLOCK PORTB
 
 struct Console
 {
@@ -42,8 +39,8 @@ struct Console
 
 #ifdef OVERCLOCK
   AD9833 _clock;
-#endif
   void halt( bool );
+#endif
 
   static REGION _region;
   uint8_t _press_reset_counter;
@@ -53,11 +50,13 @@ struct Console
   volatile bool _reset;
 };
 
+#ifdef OVERCLOCK
 inline void Console::halt( bool v )
 {
   if( v ) CLOCK |= _BV( PINB0 );
   else CLOCK &= ~_BV( PINB0 );
 }
+#endif
 
 inline REGION Console::load_region()
 {

@@ -25,7 +25,6 @@
 
 #include "console.h"
 #include "controller.h"
-#include "overclock.h"
 
 Console    *mega_drive;
 Controller *pad;

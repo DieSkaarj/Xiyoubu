@@ -6,7 +6,9 @@
 #include <avr/eeprom.h>
 
 #include "enumerations.h"
-#include "overclock.h"
+#include <AD9833.h>
+
+#define CLOCK PORTB
 
 struct Console
 {
@@ -15,6 +17,7 @@ struct Console
   void overclock( float amt );
   static void restart();
   static REGION load_region();
+  static float step;
 
   const REGION region() const;
   void save_region() const;
@@ -25,19 +28,26 @@ struct Console
   void reconfigure(const REGION t_region);
   void handle(const uint32_t t_ticks);
 
-  void annul_counter(){ _press_reset_counter=0; }
-
   Console( const uint32_t );
 
   private:
 
-  static OverClock _clock;
+  void halt( bool );
+
   static REGION _region;
+  AD9833 _clock;
   uint8_t _press_reset_counter;
   uint32_t _chronos,_timer_a,_timer_b;
+  const float _frequency;
   bool _has_reconf,_is_pressed;
   volatile bool _reset;
 };
+
+inline void Console::halt( bool v )
+{
+  if( v ) CLOCK |= _BV( PINB7 );
+  else CLOCK &= ~_BV( PINB7 );
+}
 
 inline REGION Console::load_region()
 {

@@ -3,7 +3,6 @@
 
 #include "controller.h"
 #include "console.h"
-#include "overclock.h"
 
 #define CONTROLLER PORTD
 #define CONTROLLER_READ PIND
@@ -81,11 +80,11 @@ void Controller::handle(const uint32_t t_ticks)
   ( status )
   {
     case OC_INC:
-//     console.overclock( Console::step );
+      console.overclock( Console::step );
     break;
 
     case OC_DEC:
-//     console.overclock( -Console::step );
+      console.overclock( -Console::step );
     break;
  
     case REGION_FWD:

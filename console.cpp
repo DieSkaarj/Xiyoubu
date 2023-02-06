@@ -1,5 +1,4 @@
 #include "console.h"
-#include <SPI.h>
 
 #include "pins_arduino.h"
 
@@ -12,16 +11,16 @@
 #define REGION(v) ( CONSOLE |= v<<SYSTEM )
 #define LED_PIN PINC4
 #define LED(v) ( CONSOLE &= ~(0B1011<<LED_PIN), CONSOLE |= (v<<LED_PIN) )
-#define LIGHT(v) (v<<LED_PIN)
-#define RESET_HOLD 1300U
 
+#define RESET_HOLD 1300U
+#define FNC_PIN 8
 /*
  * Init. static variables.
  */
 
 const uint8_t Console::led[4]{ LED_OFF,MAGENTA,RED,CYAN };
 REGION Console::_region{ static_cast< REGION >( load_region() ) };
-OverClock Console::_clock;
+float Console::step{ 5e+5 };
 /*
  *
  * CTORS
@@ -29,10 +28,10 @@ OverClock Console::_clock;
  */
 
 Console::Console( const uint32_t t_ticks ):
-  _press_reset_counter( 0 ),
+  _clock( FNC_PIN ),_press_reset_counter( 0 ),
   _chronos( t_ticks ),_timer_a( t_ticks ),
-  _timer_b( t_ticks ),_has_reconf( false ),
-  _is_pressed( false )
+  _timer_b( t_ticks ),_frequency( 7e+6 ),
+  _has_reconf( false ),_is_pressed( false )
 {
   CONSOLE_DDR = CONSOLE_CONF;
   CONSOLE = CONSOLE_INIT;
@@ -42,6 +41,10 @@ Console::Console( const uint32_t t_ticks ):
   PCICR = _BV( PCIE1 );
   PCIFR |= _BV( PCIF1 );
   PCMSK1 = _BV( PCINT8 );
+
+  _clock.Begin();
+  _clock.ApplySignal( SQUARE_WAVE,REG0,_frequency );
+  _clock.EnableOutput( true );
 }
 
 /*
@@ -67,15 +70,14 @@ void Console::restart()
 
 void Console::overclock( float amt )
 {
-/*  flash_led( GREEN|BLUE,10 );
+  float freq{ _clock.GetActualProgrammedFrequency( REG0 ) };
 
-  float freq{  };
   if( freq+amt > 125e+5 
   || freq+amt < 7e+6 ) return;
 
   halt( true );
   _clock.IncrementFrequency( REG0,amt );
-  halt( false );*/
+  halt( false );
 }
 
 void Console::flash_led() const

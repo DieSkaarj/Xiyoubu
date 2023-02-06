@@ -79,14 +79,16 @@ void Controller::handle(const uint32_t t_ticks)
   switch
   ( status )
   {
+#ifdef OVERCLOCK
     case OC_INC:
-      console.overclock( Console::step );
+     console.overclock( Console::step );
     break;
 
     case OC_DEC:
       console.overclock( -Console::step );
     break;
- 
+#endif
+
     case REGION_FWD:
       console.reconfigure( static_cast< REGION >( console.region()+1 ) );
     break;

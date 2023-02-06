@@ -20,7 +20,11 @@
 
 const uint8_t Console::led[4]{ LED_OFF,MAGENTA,RED,CYAN };
 REGION Console::_region{ static_cast< REGION >( load_region() ) };
-float Console::step{ 5e+5 };
+
+#ifdef OVERCLOCK
+  const float Console::step{ 5e+5 };
+#endif
+
 /*
  *
  * CTORS
@@ -28,7 +32,10 @@ float Console::step{ 5e+5 };
  */
 
 Console::Console( const uint32_t t_ticks ):
-  _clock( FNC_PIN ),_press_reset_counter( 0 ),
+#ifdef OVERCLOCK
+  _clock( FNC_PIN ),
+#endif
+  _press_reset_counter( 0 ),
   _chronos( t_ticks ),_timer_a( t_ticks ),
   _timer_b( t_ticks ),_frequency( 7e+6 ),
   _has_reconf( false ),_is_pressed( false )
@@ -42,9 +49,11 @@ Console::Console( const uint32_t t_ticks ):
   PCIFR |= _BV( PCIF1 );
   PCMSK1 = _BV( PCINT8 );
 
+#ifdef OVERCLOCK
   _clock.Begin();
   _clock.ApplySignal( SQUARE_WAVE,REG0,_frequency );
   _clock.EnableOutput( true );
+#endif
 }
 
 /*
@@ -67,7 +76,7 @@ void Console::restart()
   CONSOLE |=_BV( PINC1 );
 }
 
-
+#ifdef OVERCLOCK
 void Console::overclock( float amt )
 {
   float freq{ _clock.GetActualProgrammedFrequency( REG0 ) };
@@ -79,6 +88,7 @@ void Console::overclock( float amt )
   _clock.IncrementFrequency( REG0,amt );
   halt( false );
 }
+#endif
 
 void Console::flash_led() const
 {

@@ -6,7 +6,12 @@
 #include <avr/eeprom.h>
 
 #include "enumerations.h"
-#include <AD9833.h>
+
+#ifdef OVERCLOCK
+
+  #include <AD9833.h>
+
+#endif
 
 #define CLOCK PORTB
 
@@ -14,10 +19,13 @@ struct Console
 {
   const static uint8_t led[4];
 
+#ifdef OVERCLOCK
+  static const float step;
   void overclock( float amt );
+#endif
+
   static void restart();
   static REGION load_region();
-  static float step;
 
   const REGION region() const;
   void save_region() const;
@@ -32,10 +40,12 @@ struct Console
 
   private:
 
+#ifdef OVERCLOCK
+  AD9833 _clock;
+#endif
   void halt( bool );
 
   static REGION _region;
-  AD9833 _clock;
   uint8_t _press_reset_counter;
   uint32_t _chronos,_timer_a,_timer_b;
   const float _frequency;

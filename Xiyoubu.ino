@@ -26,6 +26,8 @@
 #include "console.h"
 #include "controller.h"
 
+#define OVERCLOCK
+
 Console    *mega_drive;
 Controller *pad;
 

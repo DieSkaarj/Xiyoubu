@@ -5,7 +5,7 @@ Xiyoubu is a hardware console mod for the Mega Drive/Genesis that targets ****MH
 Xiyoubu will load the last saved profile on console power on.
 
 ***Xiyoubu has only been tested and confirmed working on a PAL Mega Drive II.***
-***Overclocking has yet to be tested, and is using Bill Williams AD9833 library.***
+***Overclocking has yet to be tested, and is using Bill Williams AD9833 library: https://github.com/Billwilliams1952/AD9833-Library-Arduino***
 
 #### Controller
 - Menu: **(START + A + C)** + *[...]*

@@ -54,8 +54,6 @@ int main()
 
   init();
 
-//  mega_drive->restart();
-
   while( true )
   {
     const uint32_t timer{ millis() };

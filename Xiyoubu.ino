@@ -26,19 +26,17 @@
 #include "console.h"
 #include "controller.h"
 
-#define OVERCLOCK
-
 Console    *mega_drive;
 Controller *pad;
 
-ISR(INT1_vect)
+ISR( INT1_vect )
 {
-  pad->poll();
+  pad->poll( ( ( PIND>>PD3 ) &1 ),PIND );
 }
 
-ISR(PCINT1_vect)
+ISR( PCINT1_vect )
 {
-  mega_drive->poll();
+  mega_drive->poll( ( PINC>>PC1 ) &1 );
 }
 
 void destroy( void *t_thing )
@@ -49,19 +47,21 @@ void destroy( void *t_thing )
 
 int main()
 {
-  sei();
+  init();
+
+  noInterrupts();
 
   mega_drive = new Console( millis() );
   pad = new Controller( *mega_drive );
 
-  init();
+  interrupts();
 
   while( true )
   {
-    const uint32_t timer{ millis() };
+    const uint32_t tocks{ millis() };
 
-    pad->handle( timer );
-    mega_drive->handle( timer );
+    mega_drive->handle( tocks );
+    pad->handle( tocks );
   }
 
   destroy( pad );

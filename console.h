@@ -7,63 +7,66 @@
 
 #include "enumerations.h"
 
-#ifdef OVERCLOCK
-  #include <AD9833.h>
-  #define CLOCK PORTB
-#endif
+#define CLOCK PORTB
 
-struct Console
+class Console
 {
-  const static uint8_t led[4];
 
-#ifdef OVERCLOCK
-  static const float step;
-  void overclock( float amt );
-#endif
+  void halt( bool );
 
-  static void restart();
-  static REGION load_region();
+  void clear_sys_port(){ PORTC &= ~(0xc); }
+  void clear_led_port(){ PORTA &= ~(0xf); }
 
-  const REGION region() const;
+  void write_led_port( const uint8_t v ){ PORTA |= v&0xf; }
+  void write_sys_port( const uint8_t v ){ PORTC |= v&0xc; }
+
+  void set_sys_region( const eREGION region ) { clear_sys_port(); write_sys_port( region ); }
+  void set_led_color( const eLED color )  { clear_led_port(); write_led_port( color ); }
+
+  static eREGION _region;
+  uint8_t _press_reset_counter;
+  uint32_t _chronos,_tap_timer;
+
+  bool _is_pressed;
+
+  const static double crystal[ 6 ];
+  int _crystal_val_counter;
+
+  eLED led( eREGION v ){ return _led[ v>>2 ]; }
+
+  const static uint8_t _led[4];
+
+  public:
+
+  void overclock( const bool );
+  void check_frequency();
+
+  void restart();
+  static eREGION load_region();
+
+  const eREGION region() const;
   void save_region() const;
-  void flash_led() const;
-  void flash_led( const LED,const int=3 ) const;
 
-  void poll();
-  void reconfigure(const REGION t_region);
-  void handle(const uint32_t t_ticks);
+  void poll( const bool );
+  void reconfigure( const eREGION t_region );
+  void handle( const uint32_t t_ticks );
 
   Console( const uint32_t );
-
-  private:
-
-#ifdef OVERCLOCK
-  AD9833 _clock;
-  void halt( bool );
-#endif
-
-  static REGION _region;
-  uint8_t _press_reset_counter;
-  uint32_t _chronos,_timer_a,_timer_b;
-  const float _frequency;
-  bool _has_reconf,_is_pressed;
-  volatile bool _reset;
 };
 
-#ifdef OVERCLOCK
-inline void Console::halt( bool v )
+inline void Console::halt( const bool t_ctrl )
 {
-  if( v ) CLOCK |= _BV( PINB0 );
-  else CLOCK &= ~_BV( PINB0 );
-}
-#endif
-
-inline REGION Console::load_region()
-{
-  return static_cast< REGION >( eeprom_read_byte( 0 ) );
+  /* Active low */
+  CLOCK = t_ctrl?
+  CLOCK & ~_BV( PINB7 ) : CLOCK | _BV( PINB7 );
 }
 
-inline const REGION Console::region() const
+inline eREGION Console::load_region()
+{
+  return static_cast< eREGION >( eeprom_read_byte( 0 ) );
+}
+
+inline const eREGION Console::region() const
 {
   return _region;
 }
@@ -72,16 +75,13 @@ inline void Console::save_region() const
 {
   eeprom_update_byte(0,_region);
 
-  PORTC &= ~(0B1011<<PINC4);
+  set_led_color( WHITE );
   delay( 200 );
-  PORTC |= ( RED|GREEN|BLUE )<<PINC4;
+  set_led_color( led( _region ) );
   delay( 200 );
-  PORTC &= ~(0B1011<<PINC4);
+  set_led_color( WHITE );
   delay( 200 );
-  PORTC |= ( RED|GREEN|BLUE )<<PINC4;
-  delay( 200 );
-  PORTC &= ~(0B1011<<PINC4);
-  PORTC |= ( led[ _region ] )<<PINC4;
+  set_led_color( led( _region ) );
 }
 
 #endif//_CONSOLE_H

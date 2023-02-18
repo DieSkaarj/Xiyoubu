@@ -3,49 +3,45 @@
 
 class Console;
 
-class Controller
+struct Controller
 {
-  const static uint8_t  PAD_MASK{ 0b00001001 },
-                        SIG_MASK{ 0b00001000 };
-
-  volatile uint16_t _on_read;
-  Console           &console;
+  const static uint8_t  SIG_MASK{ 0b00001000 };
+  const static uint16_t PAD3{ 0xc0 },PAD6{ 0x30 },
+                        PAD_MASK{ 0xfffff606 };
+  volatile uint16_t     _on_read{ 0xff };
+  Console               &console;
 
 /*
  * HIGH bits will be stored as the most significant bits and LOW the least
+ *
  */
-  enum : int16_t
+  enum : uint16_t
   {
-    C = _BV(1),
-    A = _BV(2),
-    UP_LO = _BV(4),
-    DOWN_LO = _BV(5),
-    PAD3 = (0B11 << 6),
-    START = _BV(9),
-    B = _BV(10),
-    UP_HI = _BV(12),
-    DOWN_HI = _BV(13),
-    LEFT = _BV(14),
-    RIGHT = _BV(15),
-    PAD6 = (0B11 << 14)
+    START = 0x2,
+    A = 0x4,
+    C = 0x200,
+    B = 0x400,
+    UP = 0x1000,
+    DOWN = 0x2000,
+    LEFT = 0x4000,
+    RIGHT = 0x8000,
   };
 
   const static uint16_t \
-    SYSTEM_MENU{ START | A | C },
-    OVERCLOCK_MENU{ START | B },
-    OC_INC{ OVERCLOCK_MENU | UP_LO },
-    OC_DEC{ OVERCLOCK_MENU | DOWN_HI },
-    OC_CHECKUP{ OVERCLOCK_MENU | UP_HI },
-    REGION_FWD{ SYSTEM_MENU | RIGHT },
-    REGION_BCK{ SYSTEM_MENU | LEFT },
-    REGION_SAVE{ SYSTEM_MENU | UP_HI },
-    REGION_LOAD{ SYSTEM_MENU | DOWN_HI },
-    IGR{ SYSTEM_MENU | B };
+    SYSTEM{ START | A | C },
+    SYSTEM_UP{ SYSTEM | UP },
+    SYSTEM_DOWN{ SYSTEM | DOWN },
+    SYSTEM_LEFT{ SYSTEM | LEFT },
+    SYSTEM_RIGHT{ SYSTEM | RIGHT },
+    SYSTEM_IGR{ SYSTEM | B },
+    ALT{ START | B },
+    ALT_A{ ALT | A },
+    ALT_C{ ALT | C };
 
   public:
 
-  void poll();
-  void handle(const uint32_t);
+  void poll( const bool,const uint8_t );
+  void handle( const uint32_t );
 
   Controller(Console &);
 };

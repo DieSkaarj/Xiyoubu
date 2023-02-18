@@ -7,9 +7,9 @@
 #define CONTROLLER PORTD
 #define CONTROLLER_READ PIND
 #define CONTROLLER_DDR DDRD
-#define CONTROLLER_CONF 0b00000000
-#define CONTROLLER_INIT 0b00001000
-#define SELECT PIND3
+#define CONTROLLER_CONF 0x1
+#define CONTROLLER_INIT 0xfe
+#define SELECT PD3
 #define BUTTON_HOLD 1300U
 
 /*
@@ -18,19 +18,23 @@
  *
  */
 
+#define INCREASE true
+#define DECREASE false
+
 Controller::Controller(Console &t_console):
   console(t_console)
 {
   /*
    *  Set Port D to input and clear pull-up resistors 
    */
-  CONTROLLER_DDR = CONTROLLER_CONF;
+
   CONTROLLER = CONTROLLER_INIT;
-  /*
-   * Set interrupt mode to logical CHANGE on INT0 (pin18/D2.)
-   */
-  EICRA = _BV(ISC10);
-  EIMSK = _BV(INT1);     
+  CONTROLLER_DDR = CONTROLLER_CONF;
+
+  EICRA &= ~_BV( ISC11 );
+  EICRA = _BV( ISC10 ) ;
+  EIMSK = _BV( INT1 );
+
 }
 
 /*
@@ -39,35 +43,45 @@ Controller::Controller(Console &t_console):
  *
  */
 
-void Controller::poll()
+void Controller::poll( const bool t_signal,const uint8_t t_buttons )
 {
   /*
-   * Is SELECT signal high or low?
+   * The idea here is just to copy the port register into the _on_read variable.
+   * When the SELECT signal from the console is high the ports' values are
+   * shifted 8 bits to the left.
+   * 
+   * The registers read from an active low signal e.g.
+   * if   ( SIGNAL == LOW  && START/C:pin1 == LOW ) then 'START' is expressed
+   * elif ( SIGNAL == HIGH && START/C:pin1 == LOW ) then 'C' is expressed 
+   * 
    */
-  const bool    signal{(SIG_MASK&CONTROLLER_READ)>>SELECT ? true : false };
-  const uint8_t buttons{PAD_MASK|CONTROLLER_READ};
+
   /*
    * The controllers' port is an 8Bit register. To only manipulate the HIGH and LOW
    * bits a 255 (0xFF) mask is applied and inverted when necessary.
    */
-  _on_read &= signal==false? \
-  (buttons<<8)|(~0xff) : (buttons|0xff);
 
-  _on_read |= signal==true? \
-  (~buttons<<8)&(~0xff) : (buttons^0xff);
+  _on_read &= t_signal==false? \
+  ( t_buttons|0xfe ) <<8:
+  ( t_buttons|0xfe );
+
+  _on_read |= t_signal==true? \
+  ( t_buttons^0xfe ) <<8:
+  ( t_buttons^0xfe );
 }
 
-void Controller::handle(const uint32_t t_ticks)
+void Controller::handle( const uint32_t t_ticks )
 {
  /*
    * If lines connected to Left and Right are low the console asserts that a
    * 3BTN controller is present. These values are masked when handling,
    * as only the button presses are relevant here.
+   * &~0x1c9
    */
 
   static uint16_t last_read{ 0 };
   static uint32_t delta{ BUTTON_HOLD };
-  const uint16_t  status{ ( _on_read&(  ~PAD3 ) ) };
+  uint16_t  status{ ( _on_read&PAD_MASK ) };
   uint32_t debounce{ t_ticks-delta };
 
   if
@@ -79,35 +93,13 @@ void Controller::handle(const uint32_t t_ticks)
   switch
   ( status )
   {
-#ifdef OVERCLOCK
-    case OC_INC:
-     console.overclock( Console::step );
-    break;
-
-    case OC_DEC:
-      console.overclock( -Console::step );
-    break;
-#endif
-
-    case REGION_FWD:
-      console.reconfigure( static_cast< REGION >( console.region()+1 ) );
-    break;
-
-    case REGION_BCK:
-      console.reconfigure( static_cast< REGION >( console.region()-1 ) );
-    break;
-
-    case IGR:
-      console.restart();
-    break;
-
-    case REGION_SAVE:
-      console.save_region();
-    break;
-
-    case REGION_LOAD:
-      console.reconfigure( console.load_region() );
-    break;
+    case SYSTEM_UP:   console.overclock( INCREASE ); break;
+    case SYSTEM_DOWN: console.overclock( DECREASE ); break;
+    case SYSTEM_LEFT: console.reconfigure( console.region()-- ); break;
+    case SYSTEM_RIGHT:console.reconfigure( console.region()++ ); break;
+    case SYSTEM_IGR:  console.restart(); break;
+    case ALT_A:       console.save_region(); break;
+    case ALT_C:       console.check_frequency(); break;
   }
 
   last_read=status;

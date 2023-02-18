@@ -9,17 +9,27 @@ enum RESET_PRESS_TYPE
   TRIPLE_TAP = 3
 };
 
-enum REGION : uint8_t{ NIL = 0x00,JAP = 0x01,EUR = 0x02,USA = 0x03 };
-enum LED : uint8_t
+enum eREGION : uint8_t{ JAP = 0x4,EUR = 0x8,USA = 0xc };
+inline eREGION operator++( eREGION v ){ if( v == JAP ) return EUR; if( v == EUR ) return USA; if( v == USA ) return JAP; };
+inline eREGION operator--( eREGION v ){ if( v == JAP ) return USA; if( v == EUR ) return JAP; if( v == USA ) return EUR; };
+enum eLED : uint8_t
 {
+  // RGB R=1000, G=0001, B=0010
   LED_OFF = 0b0000,
-  RED = 0b0001,
-  GREEN = 0b0010,
-  YELLOW = 0b0011,
-  BLUE = 0b1000,
-  MAGENTA = 0b1001,
-  CYAN = 0b1010,
+  
+  GREEN = 0b0001,
+  BLUE = 0b0010,
+  CYAN = 0b0011,
+  RED = 0b1000,
+  YELLOW = 0b1001,
+  MAGENTA = 0b1010,
   WHITE = 0b1011
+};
+
+struct Region
+{
+  eREGION region;
+  eLED    color;
 };
 
 #endif//_ENUMERATIONS_H

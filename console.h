@@ -24,12 +24,26 @@ class Console
   void set_led_color( const eLED color )  { clear_led_port(); write_led_port( color ); }
 
   static eREGION _region;
-  uint8_t _press_reset_counter;
+  uint8_t _press_counter;
   uint32_t _chronos,_tap_timer;
 
   bool _is_pressed;
 
-  const static double crystal[ 6 ];
+  const double _crystal[ 12 ]={ 
+    7.e+6,
+    7.5e+6,
+    8.e+6,
+    8.5e+6,
+    9.e+6,
+    9.5e+6,
+    10e+6,
+    10.5e+6,
+    11.e+6,
+    11.5e+6,
+    12.e+6,
+    12.5e+6,
+  };
+
   int _crystal_val_counter;
 
   eLED led( eREGION v ){ return _led[ v>>2 ]; }

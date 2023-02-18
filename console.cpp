@@ -34,15 +34,6 @@
 
 const uint8_t Console::_led[4]{ LED_OFF,MAGENTA,RED,CYAN };
 eREGION Console::_region{ load_region() };
-const double Console::crystal[]{ 
-  7.e+6,
-  7.5e+6,
-  8.e+6,
-  8.5e+6,
-  9.e+6,
-  10e+6
-};
-
 
 /*
  *
@@ -55,7 +46,7 @@ void SerialWrite( uint16_t );
 void SerialSend( const double );
 
 Console::Console( const uint32_t t_ticks ):
-  _press_reset_counter( 0 ),
+  _press_counter( 0 ),
   _crystal_val_counter( 0 ),
   _chronos( t_ticks ),
   _tap_timer( 0 ),
@@ -73,7 +64,7 @@ Console::Console( const uint32_t t_ticks ):
   CPU = 0b10100100;
   CPU_DDR =  0b10101100;
 
-  SerialSend( crystal[ 0 ] );
+  SerialSend( _crystal[ 0 ] );
   reconfigure( _region );
 }
 
@@ -97,7 +88,7 @@ void Console::restart()
 
 void Console::overclock( const bool dir )
 {
-  if( dir && _crystal_val_counter<6 ) ++_crystal_val_counter;
+  if( dir && _crystal_val_counter<sizeof(_crystal)/sizeof(double) ) ++_crystal_val_counter;
   else if( !dir && _crystal_val_counter>0 ) --_crystal_val_counter;
   else return;
 
@@ -106,15 +97,15 @@ void Console::overclock( const bool dir )
   ;;
   ;;
   ;;
-  SerialSend( crystal[ _crystal_val_counter ] );
+  SerialSend( _crystal[ _crystal_val_counter ] );
   halt( false );
   check_frequency();
 }
 
 void Console::check_frequency()
 {
-  uint32_t dtime{ crystal[ _crystal_val_counter ] /1e+4 },
-    freq_mhz{ crystal[ _crystal_val_counter ]/1e+6 },
+  uint32_t dtime{ _crystal[ _crystal_val_counter ] /1e+4 },
+    freq_mhz{ _crystal[ _crystal_val_counter ]/1e+6 },
     ocdelta{ freq_mhz-6 };
 
   eLED color;
@@ -152,13 +143,13 @@ void Console::poll( const bool t_button )
 
   if
   ( delta > ( RESET_HOLD *.5 ) )
-    _press_reset_counter = _can_reset = false;
+    _press_counter = _can_reset = false;
   else
     _can_reset = true;
 
   if
   ( ( _is_pressed = !t_button ) )
-    ++_press_reset_counter;
+    ++_press_counter;
 
   _chronos = ticks;
 }
@@ -183,7 +174,7 @@ void Console::reconfigure( const eREGION t_region )
 void Console::handle( const uint32_t t_ticks )
 {
   const bool is_pressed{ _is_pressed };
-  const uint8_t tap{ _press_reset_counter };
+  const uint8_t tap{ _press_counter };
   static bool is_reconfigured{ false };
 
   if
@@ -218,7 +209,7 @@ void Console::handle( const uint32_t t_ticks )
     ( _can_reset && tap == 1
     && ( t_ticks - _chronos )>( RESET_HOLD *.5 ) )
     {
-      _press_reset_counter = _can_reset = 0;
+      _can_reset = false;
       restart();
     }
 

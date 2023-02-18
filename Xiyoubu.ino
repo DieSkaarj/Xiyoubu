@@ -31,12 +31,17 @@ Controller *pad;
 
 ISR( INT1_vect )
 {
-  pad->poll( ( ( PIND>>PD3 ) &1 ),PIND );
+  const bool select{ ( PIND>>PD3 ) &1 };
+  const uint8_t buttons{ PIND };
+
+  pad->poll( select,buttons );
 }
 
 ISR( PCINT1_vect )
 {
-  mega_drive->poll( ( PINC>>PC1 ) &1 );
+  const bool button{ ( PINC>>PC1 ) &1 };
+
+  mega_drive->poll( button );
 }
 
 void destroy( void *t_thing )

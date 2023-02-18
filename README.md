@@ -35,9 +35,9 @@ Xiyoubu will load the last saved profile on console power on.
 - [X] Physical Region Cycling
 - [X] Restore Region On Power On
 - [X] In-Game Reset
-- [ ] Overclock
+- [X] Overclock
 - [ ] Installation Walkthrough
-- [ ] Use Guide
+- [X] Use Guide
 
 ### Other Mega Drive related projects from the Author
 * Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj

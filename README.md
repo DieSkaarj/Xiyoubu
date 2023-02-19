@@ -10,8 +10,8 @@ Xiyoubu will load the last saved profile on console power on.
 - Menu A: **(START + A + C + [...])**
 - - **B**  - In-Game Reset
 - - **D-PAD**
-- - - **RIGHT** - Region Cycle Forward
-- - - **LEFT** - Region Cycle Backward
+- - - **RIGHT** - Region Cycle Forward (see: fig. 1)
+- - - **LEFT** - Region Cycle Backward (see: fig. 1)
 - - - **UP** - Overclock (+) (Step up .5Mhz)
 - - - **DOWN** - Overclock (-) (Step down .5Mhz)
 - Menu B: **(START + B + [...])**

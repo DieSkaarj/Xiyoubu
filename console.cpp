@@ -26,7 +26,7 @@
 #define CPU_CONF 0xac
 
 #define LED_CONF 0xb
-#define LED_INIT 0x0
+#define LED_INIT 0x8
 
 #define RESET_HOLD 1300U
 
@@ -87,11 +87,22 @@ void Console::init()
 
 int Console::restart()
 {
+  static uint32_t debounce{ 0 };
+  const uint32_t delta{ millis()-debounce };
 
-  CONSOLE &= ~_BV( RESET ) | _BV( BUTTON );
-  delayMicroseconds( 1e+6 );
-  CONSOLE |=_BV( RESET ) | _BV( BUTTON );
+  noInterrupts();
 
+  _press_counter=0;
+
+  clear_led_port();
+  CONSOLE &= ~_BV( RESET );
+  delayMicroseconds( 167e+4 );
+  CONSOLE |= _BV( RESET );
+  set_led_color( led( _region ) );
+
+  interrupts();
+
+  debounce=millis();
 }
 
 void Console::overclock( const bool dir )

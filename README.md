@@ -18,8 +18,13 @@ Xiyoubu will load the last saved profile on console power on.
 - - **A** Save current region to EEPROM
 - - **C** Check Overclock value (see: fig. 2)
 
+#### Console
+- Hold **RESET** to cycle regions
+- **Tap once** to reset
+- **Tap twice** to save region
+
 *Fig. 1*
-|Region|LED| 
+ |Region|LED| 
 |---|---|
 |USA|Cyan| 
 |PAL|Red|
@@ -35,13 +40,9 @@ Xiyoubu will load the last saved profile on console power on.
 |11|Blue|
 |12|White|
 
-#### Console
-- Hold **RESET** to cycle regions
-- **Tap once** to reset
-- **Tap twice** to save region
-
 ### Status
-- Needs more Blast, to make your Mega Drive an ÜBER DRIVE. But, other than that it's working as intended. Will endeavour to make it configurable... in the near future.
+- v1.01
+- - Tested on: MD2 VA1 PAL
 
 ### Features
 - [X] Controller Region Cycling
@@ -55,6 +56,11 @@ Xiyoubu will load the last saved profile on console power on.
 ### Other Mega Drive related projects from the Author
 * Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj
 * BlastEd - Mega Drive/Genesis Art Tool: https://dieskaarj.itch.io/blasted
+
+### Thanks for your work and research
+* **SukkoPera:** https://github.com/SukkoPera/MegaDrivePlusPlus
+* **Smudger D:** https://stompville.co.uk/?p=853
+* **Raspberryfield:** https://www.raspberryfield.life/2019/03/25/sega-mega-drive-genesis-6-button-xyz-controller/
 
 ### License
 Xiyoubu (software) is Copyright © 2023 by David 'Erosion' Oberlin.

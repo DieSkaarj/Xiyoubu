@@ -33,12 +33,12 @@ Xiyoubu will load the last saved profile on console power on.
 *Fig. 2*
 |Mhz|Color|
 |---|---|
-|7|Green|
-|8|Yellow|
-|9|Red|
-|10|Magenta|
-|11|Blue|
-|12|White|
+|7+|Green|
+|8+|Yellow|
+|9+|Red|
+|10+|Magenta|
+|11+|Blue|
+|12+|White|
 
 ### Status
 - v1.01

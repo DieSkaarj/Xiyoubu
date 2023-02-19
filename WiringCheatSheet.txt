@@ -9,8 +9,8 @@ Red     *   P_A3   | LED R         | [*] 16                    SCK 13[*] | Clock
 Green   *   P_A0   | LED G         | [*] A6                   MISO 12[ ] |               |   P_B4   * 
 Blue    *   P_A1   | LED B         | [*] A7                   MOSI 11[*] | Data  (AD9833)|   P_B3   * Green
 White   *   P_C0   | Reset Write   | [*] A0                     SS 10[*]~| FSYNC (AD9833)|   P_B2   * Grey
-Black   *   P_C1   | Reset Read    | [*] A1                         9[ ]~| 5V (AD9833)   |   P_B1   * 
-Grey    *   P_C2   | JP1/2 (JP/EN) | [*] A2                         8[ ] | GND (AD9833)  |   P_B0   * 
+Black   *   P_C1   | Reset Read    | [*] A1                         9[ ]~|               |   P_B1   * 
+Grey    *   P_C2   | JP1/2 (JP/EN) | [*] A2                         8[ ] |               |   P_B0   * 
 Grey    *   P_C3   | JP3/4 (50/60) | [*] A3                         7[*] | Pad Right     |   P_D7   * Yellow
         *   P_C4   |               | [ ] A4/SDA                     6[*] | Pad Left      |   P_D6   * Orange
         *   P_C5   |               | [ ] A5/SCL                     5[*] | Pad Down      |   P_D5   * Red

@@ -1,6 +1,8 @@
 #ifndef _ENUMERATIONS_H
 #define _ENUMERATIONS_H
 
+#include "types.h"
+
 enum RESET_PRESS_TYPE
 {
   NOT_TAPPED = 0,
@@ -26,8 +28,6 @@ enum eLED : uint8_t
   MAGENTA = 0b1010,
   WHITE = 0b1011
 };
-
-typedef uint16_t pad_button_t;
 
 enum : pad_button_t
 {

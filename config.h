@@ -29,7 +29,7 @@ constexpr eLED \
 /********************/
 /*  CONSOLE TIMINGS */
 /********************/
-constexpr uint32_t \
+constexpr milliseconds_t \
     /*
      * The amount of time (in ms) that it takes to  
      * cycle regions and how long to wait for 

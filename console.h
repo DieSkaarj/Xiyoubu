@@ -91,7 +91,7 @@ inline void Console::save_region() const
 
   set_led_color( WHITE );
   delay( 200 );
-  set_led_color( led( _region ) );
+  clear_led_port();
   delay( 200 );
   set_led_color( WHITE );
   delay( 200 );

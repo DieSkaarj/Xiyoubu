@@ -26,8 +26,8 @@
 #include "console.h"
 #include "controller.h"
 
-Console * mega_drive;
-const Controller *pad;
+static Console * mega_drive;
+static const Controller *pad;
 
 ISR( INT1_vect )
 {

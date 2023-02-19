@@ -29,8 +29,6 @@
 #define LED_CONF 0xb
 #define LED_INIT 0x8
 
-#define RESET_HOLD 1300U
-
 /*
  * Init. static variables.
  */
@@ -160,7 +158,7 @@ void Console::poll( const bool t_button )
    delta{ ticks-_chronos };
 
   if
-  ( delta > ( RESET_HOLD *.5 ) )
+  ( delta > ( BUTTON_TAPOUT ) )
     _press_counter = 0;
 
   if
@@ -201,7 +199,7 @@ void Console::handle( const uint32_t t_ticks )
       case SINGLE_TAP:
       {
         if
-        ( ( t_ticks-_tap_timer ) > RESET_HOLD )
+        ( ( t_ticks-_tap_timer ) > BUTTON_RESET_TIME )
         {
           if( is_reconfigured )
           {
@@ -221,7 +219,7 @@ void Console::handle( const uint32_t t_ticks )
   }
   else
   {
-    if( _can_reset && ( ( t_ticks-_chronos )>( RESET_HOLD*.5 ) ) )
+    if( _can_reset && ( ( t_ticks-_chronos )>( BUTTON_TAPOUT ) ) )
       _can_reset=restart();
 
     if( is_reconfigured ) is_reconfigured=!is_reconfigured;

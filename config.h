@@ -9,12 +9,10 @@ constexpr eLED \
   /*  
    *  Available colours:
    *  
-   *  RED,
-   *  YELLOW,
-   *  GREEN,
-   *  CYAN,
-   *  BLUE,
-   *  MAGENTA,
+   *  LED_OFF,
+   *  RED, YELLOW,
+   *  GREEN, CYAN,
+   *  BLUE, MAGENTA,
    *  WHITE
    *  
    */  

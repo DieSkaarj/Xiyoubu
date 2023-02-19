@@ -6,6 +6,8 @@ Xiyoubu will load the last saved profile on console power on.
 
 ***Xiyoubu has only been tested and confirmed working on a PAL Mega Drive II.***
 
+Default config...
+
 #### Controller
 - Menu A: **(START + A + C + [...])**
 - - **B**  - In-Game Reset

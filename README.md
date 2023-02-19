@@ -7,24 +7,25 @@ Xiyoubu will load the last saved profile on console power on.
 ***Xiyoubu has only been tested and confirmed working on a PAL Mega Drive II.***
 
 #### Controller
-- Console: (START + A + C) + *[...]*
+- Menu A: **(START + A + C + [...])**
 - - **B**  - In-Game Reset
 - - **D-PAD**
 - - - **RIGHT** - Region Cycle Forward
 - - - **LEFT** - Region Cycle Backward
 - - - **UP** - Overclock (+) (Step up .5Mhz)
 - - - **DOWN** - Overclock (-) (Step down .5Mhz)
-- - -
-- Info: (START + B) + *[...]*
+- Menu B: **(START + B + [...])**
 - - **A** Save current region to EEPROM
 - - **C** Check Overclock value (see: fig. 2)
 
+*Fig. 1*
 |Region|LED| 
 |---|---|
 |USA|Cyan| 
 |PAL|Red|
 |JAP|Magenta|
 
+*Fig. 2*
 |Mhz|Color|
 |---|---|
 |7|Green|

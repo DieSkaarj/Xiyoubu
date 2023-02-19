@@ -55,7 +55,7 @@ class Console
   void overclock( const bool );
   void check_frequency();
 
-  void restart();
+  int restart();
   static eREGION load_region();
 
   const eREGION region() const;

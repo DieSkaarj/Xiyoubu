@@ -85,12 +85,13 @@ void Console::init()
   }
 }
 
-void Console::restart()
+int Console::restart()
 {
-  CONSOLE &=~_BV( RESET );
-  delay( 40 );
-  CONSOLE |=_BV( RESET );
-  delay( 20 );
+
+  CONSOLE &= ~_BV( RESET ) | _BV( BUTTON );
+  delayMicroseconds( 1e+6 );
+  CONSOLE |=_BV( RESET ) | _BV( BUTTON );
+
 }
 
 void Console::overclock( const bool dir )
@@ -102,6 +103,7 @@ void Console::overclock( const bool dir )
   halt( true );
   delayMicroseconds( 10 );
   SerialSend( _crystal[ _crystal_val_counter ] );
+  delayMicroseconds( 10 );
   halt( false );
   check_frequency();
 }
@@ -147,15 +149,13 @@ void Console::poll( const bool t_button )
 
   if
   ( delta > ( RESET_HOLD *.5 ) )
-    _press_counter = _can_reset = false;
-  else
-    _can_reset = true;
+    _press_counter = 0;
 
   if
   ( ( _is_pressed = !t_button ) )
-    ++_press_counter;
+    _can_reset=_press_counter++?false:true;
 
-  _chronos = ticks;
+  _chronos = millis();
 }
 
 void Console::reconfigure( const eREGION t_region )
@@ -164,7 +164,7 @@ void Console::reconfigure( const eREGION t_region )
     * Condition cycle ensures that the console region is between
     * valid region codes.
     */
- if
+  if
     ( t_region < JAP ) _region = USA;
   else if
     ( t_region > USA ) _region = JAP;
@@ -181,8 +181,7 @@ void Console::handle( const uint32_t t_ticks )
   const uint8_t tap{ _press_counter };
   static bool is_reconfigured{ false };
 
-  if
-  ( is_pressed )
+  if( is_pressed )
   {
     switch
     ( tap )
@@ -192,7 +191,11 @@ void Console::handle( const uint32_t t_ticks )
         if
         ( ( t_ticks-_tap_timer ) > RESET_HOLD )
         {
-          if( is_reconfigured ) reconfigure( region()++ );
+          if( is_reconfigured )
+          {
+            reconfigure( region()++ );
+            _can_reset = false;
+          }
           else is_reconfigured = true;
 
           _tap_timer = t_ticks;
@@ -200,26 +203,16 @@ void Console::handle( const uint32_t t_ticks )
       }
       break;
 
-      case DOUBLE_TAP:
-      {
-        save_region();
-      }
-      break;
+      case DOUBLE_TAP: save_region(); break;
+      case TRIPLE_TAP: _press_counter = 0; break;
     }
   }
-  else /* is_pressed == false */
-  {    
-    if
-    ( _can_reset && tap == 1
-    && ( t_ticks - _chronos )>( RESET_HOLD *.5 ) )
-    {
-      _can_reset = false;
-      restart();
-    }
+  else
+  {
+    if( _can_reset && ( ( t_ticks-_chronos )>( RESET_HOLD*.5 ) ) )
+      _can_reset=restart();
 
-    if
-    ( is_reconfigured )
-      is_reconfigured = false;
+    if( is_reconfigured ) is_reconfigured=!is_reconfigured;
   }
 }
 

@@ -57,10 +57,13 @@ Xiyoubu will load the last saved profile on console power on.
 * Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj
 * BlastEd - Mega Drive/Genesis Art Tool: https://dieskaarj.itch.io/blasted
 
-### Thanks for your work and research
+### Thanks for your hard work and research
 * **SukkoPera:** https://github.com/SukkoPera/MegaDrivePlusPlus
 * **Smudger D:** https://stompville.co.uk/?p=853
 * **Raspberryfield:** https://www.raspberryfield.life/2019/03/25/sega-mega-drive-genesis-6-button-xyz-controller/
+* **Charles MacDonald:** https://gendev.spritesmind.net/forum/viewtopic.php?t=1262
+* **Liam Riordan:** https://www.analog.com/media/en/technical-documentation/application-notes/AN-1070.pdf
+* **Atmel:** http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-9157-automotive-microcontrollers-attiny88_datasheet.pdf
 
 ### License
 Xiyoubu (software) is Copyright © 2023 by David 'Erosion' Oberlin.

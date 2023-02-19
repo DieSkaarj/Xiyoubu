@@ -47,7 +47,7 @@ class Console
 
   eLED led( eREGION v ){ return _led[ v>>2 ]; }
 
-  const static uint8_t _led[4];
+  const static eLED _led[4];
 
   public:
 

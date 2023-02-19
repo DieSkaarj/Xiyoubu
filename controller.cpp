@@ -3,6 +3,7 @@
 
 #include "controller.h"
 #include "console.h"
+#include "config.h"
 
 #define CONTROLLER PORTD
 #define CONTROLLER_READ PIND
@@ -81,13 +82,13 @@ void Controller::handle( const uint32_t t_ticks )
   switch
   ( status )
   {
-    case SYSTEM_UP:   console.overclock( INCREASE ); break;
-    case SYSTEM_DOWN: console.overclock( DECREASE ); break;
-    case SYSTEM_LEFT: console.reconfigure( console.region()-- ); break;
-    case SYSTEM_RIGHT:console.reconfigure( console.region()++ ); break;
-    case SYSTEM_IGR:  console.restart(); break;
-    case ALT_A:       console.save_region(); break;
-    case ALT_C:       console.check_frequency(); break;
+    case OVERCLOCK_UP:    console.overclock( INCREASE ); break;
+    case OVERCLOCK_DOWN:  console.overclock( DECREASE ); break;
+    case REGION_FORWARD:  console.reconfigure( console.region()-- ); break;
+    case REGION_BACKWARD: console.reconfigure( console.region()++ ); break;
+    case IN_GAME_RESET:   console.restart(); break;
+    case SAVE_REGION:     console.save_region(); break;
+    case CHECK_FREQUENCY: console.check_frequency(); break;
   }
 
   last_read=status;

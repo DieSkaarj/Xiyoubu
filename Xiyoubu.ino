@@ -26,8 +26,8 @@
 #include "console.h"
 #include "controller.h"
 
-Console    *mega_drive;
-Controller *pad;
+Console * mega_drive;
+const Controller *pad;
 
 ISR( INT1_vect )
 {
@@ -44,7 +44,7 @@ ISR( PCINT1_vect )
   mega_drive->poll( button );
 }
 
-void destroy( void *t_thing )
+void DestroyPtr( void *t_thing )
 {
   delete t_thing;
   t_thing = nullptr;
@@ -69,8 +69,8 @@ int main()
     pad->handle( tocks );
   }
 
-  destroy( pad );
-  destroy( mega_drive );
+  DestroyPtr( pad );
+  DestroyPtr( mega_drive );
 
   return 0;
 }

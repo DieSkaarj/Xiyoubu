@@ -1,4 +1,5 @@
 #include "console.h"
+#include "config.h"
 
 #include "pins_arduino.h"
 
@@ -18,7 +19,7 @@
 #define RGB_B PA1
 
 #define CONSOLE_CONF 0xd
-#define CONSOLE_INIT 0x1
+#define CONSOLE_INIT 0x3
 
 #define CPU PORTB
 #define CPU_DDR DDRB
@@ -34,7 +35,7 @@
  * Init. static variables.
  */
 
-const uint8_t Console::_led[4]{ LED_OFF,MAGENTA,RED,CYAN };
+const eLED Console::_led[4]{ LED_OFF,LED_JAP,LED_EUR,LED_USA};
 eREGION Console::_region{ load_region() };
 
 /*

@@ -61,6 +61,7 @@ Default config...
 
 ### Thank you for your hard work and research
 * **SukkoPera:** https://github.com/SukkoPera/MegaDrivePlusPlus
+* **TurBoss:** https://github.com/TurBoss/MegaDrivePlusPlus/tree/overclock
 * **Smudger D:** https://stompville.co.uk/?p=853
 * **Raspberryfield:** https://www.raspberryfield.life/2019/03/25/sega-mega-drive-genesis-6-button-xyz-controller/
 * **Charles MacDonald:** https://gendev.spritesmind.net/forum/viewtopic.php?t=1262

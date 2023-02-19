@@ -33,6 +33,7 @@ constexpr pad_button_t \
    *  UP, DOWN, LEFT, RIGHT
    *  
    *  These values can be piped to create a menu.
+   *
    */
 
   M_I               { START | A | C },
@@ -45,7 +46,8 @@ const static pad_button_t \
   /*
    *  These actions describe the capabilities of
    *  Xiyoubu. Changing their values changes the 
-   *  key combo required to activate them. 
+   *  key combo required to activate them.
+   *
    */
 
   OVERCLOCK_UP      { M_I  | UP },

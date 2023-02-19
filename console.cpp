@@ -17,14 +17,16 @@
 #define RGB_G PA0
 #define RGB_B PA1
 
-#define CONSOLE_CONF 0b00001101
-#define CONSOLE_INIT 0b00000011
+#define CONSOLE_CONF 0xd
+#define CONSOLE_INIT 0x1
 
 #define CPU PORTB
 #define CPU_DDR DDRB
+#define CPU_INIT 0xa4
+#define CPU_CONF 0xac
 
-#define LED_CONF 0b00001011
-#define LED_INIT 0b00000000
+#define LED_CONF 0xb
+#define LED_INIT 0x0
 
 #define RESET_HOLD 1300U
 
@@ -50,8 +52,12 @@ Console::Console( const uint32_t t_ticks ):
   _crystal_val_counter( 0 ),
   _chronos( t_ticks ),
   _tap_timer( 0 ),
-  _is_pressed( ( ( ~PIND>>PD3 ) &1 ) )
+  _is_pressed( false ),
+  _can_reset( false )
 {
+  CPU = CPU_INIT;
+  CPU_DDR =  CPU_CONF;
+
   CONSOLE = CONSOLE_INIT;
   CONSOLE_DDR = CONSOLE_CONF;
 
@@ -60,9 +66,6 @@ Console::Console( const uint32_t t_ticks ):
 
   PCICR = _BV( PCIE1 );
   PCMSK1 = _BV( PCINT9 );
-
-  CPU = 0b10100100;
-  CPU_DDR =  0b10101100;
 
   SerialSend( _crystal[ 0 ] );
   reconfigure( _region );
@@ -73,17 +76,21 @@ Console::Console( const uint32_t t_ticks ):
  * FUNCTIONS
  *
  */
-bool _can_reset{false};
+
+void Console::init()
+{
+  if( ( PINC>>PC1 ) & 1 )
+  {
+    PORTC |= _BV( PC1 );
+  }
+}
 
 void Console::restart()
 {
   CONSOLE &=~_BV( RESET );
-  ;;
-  ;;
-  delay( 42 );
-  ;;
-  ;;
+  delay( 40 );
   CONSOLE |=_BV( RESET );
+  delay( 20 );
 }
 
 void Console::overclock( const bool dir )
@@ -93,10 +100,7 @@ void Console::overclock( const bool dir )
   else return;
 
   halt( true );
-  ;;
-  ;;
-  ;;
-  ;;
+  delayMicroseconds( 10 );
   SerialSend( _crystal[ _crystal_val_counter ] );
   halt( false );
   check_frequency();

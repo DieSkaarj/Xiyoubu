@@ -34,7 +34,6 @@ Controller::Controller(Console &t_console):
   EICRA &= ~_BV( ISC11 );
   EICRA = _BV( ISC10 ) ;
   EIMSK = _BV( INT1 );
-
 }
 
 /*
@@ -56,11 +55,6 @@ void Controller::poll( const bool t_signal,const uint8_t t_buttons )
    * 
    */
 
-  /*
-   * The controllers' port is an 8Bit register. To only manipulate the HIGH and LOW
-   * bits a 255 (0xFF) mask is applied and inverted when necessary.
-   */
-
   _on_read &= t_signal==false? \
   ( t_buttons|0xfe ) <<8:
   ( t_buttons|0xfe );
@@ -72,17 +66,11 @@ void Controller::poll( const bool t_signal,const uint8_t t_buttons )
 
 void Controller::handle( const uint32_t t_ticks )
 {
- /*
-   * If lines connected to Left and Right are low the console asserts that a
-   * 3BTN controller is present. These values are masked when handling,
-   * as only the button presses are relevant here.
-   * &~0x1c9
-   */
 
   static uint16_t last_read{ 0 };
   static uint32_t delta{ BUTTON_HOLD };
-  uint16_t  status{ ( _on_read&PAD_MASK ) };
-  uint32_t debounce{ t_ticks-delta };
+  const uint16_t  status{ ( _on_read&PAD_MASK ) };
+  const uint32_t debounce{ t_ticks-delta };
 
   if
   ( last_read!=status || debounce > BUTTON_HOLD)

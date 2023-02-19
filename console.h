@@ -11,7 +11,6 @@
 
 class Console
 {
-
   void halt( bool );
 
   void clear_sys_port(){ PORTC &= ~(0xc); }
@@ -27,7 +26,7 @@ class Console
   uint8_t _press_counter;
   uint32_t _chronos,_tap_timer;
 
-  bool _is_pressed;
+  bool _is_pressed,_can_reset;
 
   const double _crystal[ 12 ]={ 
     7.e+6,
@@ -52,6 +51,7 @@ class Console
 
   public:
 
+  void init();
   void overclock( const bool );
   void check_frequency();
 

@@ -12,8 +12,8 @@ Xiyoubu will load the last saved profile on console power on.
 - - **D-PAD**
 - - - **RIGHT** - Region Cycle Forward
 - - - **LEFT** - Region Cycle Backward
-- - - **UP** - Overclock++ (Step up .5Mhz)
-- - - **DOWN** - Overclock-- (Step down .5Mhz)
+- - - **UP** - Overclock (+) (Step up .5Mhz)
+- - - **DOWN** - Overclock (-) (Step down .5Mhz)
 - - -
 - Info: (START + B) + *[...]*
 - - **A** Save current region to EEPROM

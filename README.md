@@ -57,7 +57,7 @@ Xiyoubu will load the last saved profile on console power on.
 * Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj
 * BlastEd - Mega Drive/Genesis Art Tool: https://dieskaarj.itch.io/blasted
 
-### Thanks for your hard work and research
+### Thank you for your hard work and research
 * **SukkoPera:** https://github.com/SukkoPera/MegaDrivePlusPlus
 * **Smudger D:** https://stompville.co.uk/?p=853
 * **Raspberryfield:** https://www.raspberryfield.life/2019/03/25/sega-mega-drive-genesis-6-button-xyz-controller/

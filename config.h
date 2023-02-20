@@ -80,15 +80,14 @@ constexpr pad_combo_t \
 /**********************/
 
 MNU_I              { START | A | C }, \
-MNU_II             { START | B };
-
+MNU_II             { START | B }, \
 
 /**********************/
 
 /******************/
 /*  MENU ACTIONS  */
 /******************/
-const static pad_combo_t \
+
 /*
     These actions describe the capabilities of
     Xiyoubu. Changing their values changes the

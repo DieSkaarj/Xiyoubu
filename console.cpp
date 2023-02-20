@@ -103,7 +103,6 @@ Console::Console( const uint32_t t_ticks ):
 
 void Console::restart()
 {
-  //  _lock = true;
   noInterrupts();
   {
     clear_led_port();

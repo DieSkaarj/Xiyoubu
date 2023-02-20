@@ -9,14 +9,14 @@ Xiyoubu will load the last saved profile on console power on.
 Default config...
 
 #### Controller
-- Menu A: **(START + A + C + [...])**
+- Menu I: **(START + A + C + [...])**
 - - **B**  - In-Game Reset
 - - **D-PAD**
 - - - **RIGHT** - Region Cycle Forward (see: fig. 1)
 - - - **LEFT** - Region Cycle Backward (see: fig. 1)
 - - - **UP** - Save current region to EEPROM
 - - - **DOWN** -  Check Overclocking (see: fig. 2)
-- Menu B: **(START + B + [...])**
+- Menu II: **(START + B + [...])**
 - - **D-PAD**
 - - - **UP** - Overclock (+) (Step up MAJ)
 - - - **RIGHT** - Overclock (+) (Step up MIN)

@@ -1,6 +1,6 @@
 # Xiyoubu - Mega Drive Does What Genesis-done.
 
-Xiyoubu is a hardware console mod for the Mega Drive/Genesis that targets ****MH-ATtiny88**** boards. It lets the Mega Drive change between 50Hz and 60Hz for video output (through scart) and enables language options for compatible software on the board. It also details a method for decreasing the power intake of the now retro unit by way of a USB-C power port.
+Xiyoubu is a hardware console mod for the Mega Drive/Genesis that targets ****MH-ATtiny88**** boards. It lets the Mega Drive change between 50Hz and 60Hz for video output (through scart) and enables language options for compatible software on the board. It also details a method for decreasing the power intake of the unit by way of a USB-C power port.
 
 Xiyoubu will load the last saved profile on console power on.
 

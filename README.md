@@ -28,7 +28,7 @@ Default config...
 - Hold **RESET** to cycle regions
 - **Tap once** to reset
 - **Tap twice** to save region
-- **Tap thrice** to enable/disable Xiyoubu controller handling
+- **Tap thrice** to enable/disable Xiyoubu controller handling (this option is saved and will be remembered after poweroff.)
 
 *Fig. 1*
  |Region|LED| 

@@ -30,29 +30,50 @@
 #define LED_INIT 0x8
 
 /*
- * Init. static variables.
- */
+   Init. static variables.
+*/
 
-const eLED Console::_led[4]{ LED_OFF,LED_JAP,LED_EUR,LED_USA};
-eREGION Console::_region{ load_region() };
+uint32_t Console::_chronos{ 0 },
+         Console::_tap_timer{ 0 };
 
 /*
- *
- * CTORS
- *
- */
+
+   CTORS
+
+*/
 
 uint32_t CalculateFrequency( const double );
 void SerialWrite( uint16_t );
 void SerialSend( const double );
 
+CPU_Clk::CPU_Clk():
+  _min( MIN_MHZ ), _max( MAX_MHZ ),
+  _step_s( STEP_MINOR ),
+  _step_l( STEP_MAJOR ),
+  _frequency( MIN_MHZ ),
+  _step( STEP_MINOR )
+{
+  /* Empty */
+}
+
+void CPU_Clk::reset( const double t_mhz )
+{
+  halt( true );
+  delay( CPU_HALT_TIME * .5 );
+  SerialSend( _frequency = t_mhz );
+  delay( CPU_HALT_TIME * .5 );
+  halt( false );
+}
+
 Console::Console( const uint32_t t_ticks ):
-  _press_counter( 0 ),
-  _crystal_val_counter( 0 ),
-  _chronos( t_ticks ),
-  _tap_timer( 0 ),
-  _is_pressed( false ),
-  _can_reset( false )
+  _start_time( t_ticks ),
+  _lock( true ),
+  _use_controller( false ),
+  _btn_press( false ),
+  _can_reconfigure( false ),
+  _is_reconfigured( false ),
+  _tap( 0 ),
+  _console_region( INV )
 {
   CPU = CPU_INIT;
   CPU_DDR =  CPU_CONF;
@@ -66,171 +87,171 @@ Console::Console( const uint32_t t_ticks ):
   PCICR = _BV( PCIE1 );
   PCMSK1 = _BV( PCINT9 );
 
-  SerialSend( _crystal[ 0 ] );
-  reconfigure( _region );
+  SerialSend( _clock );
+
+  controller( load_controller_preference() );
+  check_controller_preference();
+
+  reconfigure( load_region() );
 }
 
 /*
- *
- * FUNCTIONS
- *
- */
 
-void Console::init()
+   FUNCTIONS
+
+*/
+
+void Console::restart()
 {
-  if( ( PINC>>PC1 ) & 1 )
-  {
-    PORTC |= _BV( PC1 );
-  }
-}
-
-int Console::restart()
-{
-  static uint32_t debounce{ 0 };
-  const uint32_t delta{ millis()-debounce };
-
+  //  _lock = true;
   noInterrupts();
-
-  _press_counter=0;
-
-  clear_led_port();
-  CONSOLE &= ~_BV( RESET );
-  delayMicroseconds( 167e+4 );
-  CONSOLE |= _BV( RESET );
-  set_led_color( led( _region ) );
-
+  {
+    clear_led_port();
+    CONSOLE &= ~_BV( RESET );
+    delayMicroseconds( 168e+4 );
+    CONSOLE |= _BV( RESET ) | _BV( BUTTON );
+    delay( 2000 );
+  }
   interrupts();
 
-  debounce=millis();
+  set_led_color( led() );
 }
 
-void Console::overclock( const bool dir )
+void Console::overclock( const bool dir, const bool sz )
 {
-  if( dir && _crystal_val_counter<sizeof(_crystal)/sizeof(double) ) ++_crystal_val_counter;
-  else if( !dir && _crystal_val_counter>0 ) --_crystal_val_counter;
-  else return;
+  _clock.step( sz );
 
-  halt( true );
-  delayMicroseconds( 10 );
-  SerialSend( _crystal[ _crystal_val_counter ] );
-  delayMicroseconds( 10 );
-  halt( false );
+  if ( dir ) ++_clock;
+  else --_clock;
+
   check_frequency();
+  _clock.reset( _clock );
 }
 
 void Console::check_frequency()
 {
-  uint32_t dtime{ _crystal[ _crystal_val_counter ] /1e+4 },
-    freq_mhz{ _crystal[ _crystal_val_counter ]/1e+6 },
-    ocdelta{ freq_mhz-6 };
+  ELed color;
 
-  eLED color;
+  if ( _clock < 8.e+6 ) color = GREEN;
+  else if ( _clock < 9.e+6 ) color = YELLOW;
+  else if ( _clock < 10.e+6 ) color = RED;
+  else if ( _clock < 11.e+6 ) color = MAGENTA;
+  else if ( _clock < 12.e+6 ) color = BLUE;
+  else color = WHITE;
 
-  if( freq_mhz<8 ) color=GREEN;
-  else if( freq_mhz<9 ) color=YELLOW;
-  else if( freq_mhz<10 ) color=RED;
-  else if( freq_mhz<11 ) color=MAGENTA;
-  else if( freq_mhz<12 ) color=BLUE;
-  else color=WHITE;
-
-  for
-  ( int i{ 0 };i<ocdelta;++i )
-  {
-    clear_led_port();
-    delay( dtime );
-    set_led_color( color );
-    delay( dtime );
-  }
-
-  delay( dtime );
-  set_led_color( led( _region ) );
+  led_info( color );
 }
 
 void Console::poll( const bool t_button )
 {
   /*
-   * on CHANGE
-   *
-   * Reset tap counter
-   */
+     on CHANGE
 
-  const uint32_t ticks{ millis() },
-   delta{ ticks-_chronos };
+     Reset tap counter
+  */
+  const uint32_t ticks{ millis() };
 
   if
-  ( delta > ( BUTTON_TAPOUT ) )
-    _press_counter = 0;
+  ( ( _btn_press = !t_button ) )
+  {
+    ++_tap;
+    _chronos = ticks;
+  }
 
-  if
-  ( ( _is_pressed = !t_button ) )
-    _can_reset=_press_counter++?false:true;
-
-  _chronos = millis();
+  on_timeout( ticks, &default_tap );
 }
 
-void Console::reconfigure( const eREGION t_region )
+void Console::reconfigure( const ERegion t_region )
 {
   /*
-    * Condition cycle ensures that the console region is between
-    * valid region codes.
-    */
-  if
-    ( t_region < JAP ) _region = USA;
-  else if
-    ( t_region > USA ) _region = JAP;
-  else
-    _region=t_region;
+      Condition cycle ensures that the console region is between
+      valid codes.
 
-  set_led_color( led( _region ) );
-  set_sys_region( _region );
+  */
+
+  if
+  ( t_region > USA ) _console_region = JAP;
+  else if
+  ( t_region < JAP ) _console_region = USA;
+  else
+    _console_region = t_region;
+
+  set_sys_region( region() );
+  set_led_color( led() );
+}
+
+/*
+
+   A complete and utter mess of flags. No human
+   must gaze upon this nonsense.
+
+*/
+
+int Console::on_timeout( uint32_t t_ticks, void( Console::*t_func)() )
+{
+  if
+  ( ( t_ticks - _chronos ) > BUTTON_TAPOUT )
+  {
+    ( this->*t_func )();
+    return ( _tap = 0 );
+  }
+  else
+    return 1;
 }
 
 void Console::handle( const uint32_t t_ticks )
 {
-  const bool is_pressed{ _is_pressed };
-  const uint8_t tap{ _press_counter };
-  static bool is_reconfigured{ false };
-
-  if( is_pressed )
+  if ( _btn_press )
   {
     switch
-    ( tap )
+    ( _tap )
     {
       case SINGLE_TAP:
-      {
-        if
-        ( ( t_ticks-_tap_timer ) > BUTTON_RESET_TIME )
         {
-          if( is_reconfigured )
+          if
+          ( ( t_ticks - _tap_timer ) > BUTTON_RESET_TIME )
           {
-            reconfigure( region()++ );
-            _can_reset = false;
+            if ( ( _is_reconfigured = _can_reconfigure ) )
+            {
+              reconfigure( _console_region + 1 );
+            }
+            else
+              _can_reconfigure = true;
+
+            _tap_timer = t_ticks;
           }
-          else is_reconfigured = true;
-
-          _tap_timer = t_ticks;
         }
-      }
-      break;
-
-      case DOUBLE_TAP: save_region(); break;
-      case TRIPLE_TAP: _press_counter = 0; break;
+        break;
     }
   }
   else
   {
-    if( _can_reset && ( ( t_ticks-_chronos )>( BUTTON_TAPOUT ) ) )
-      _can_reset=restart();
+    _can_reconfigure = false;
 
-    if( is_reconfigured ) is_reconfigured=!is_reconfigured;
+    if ( _is_reconfigured )
+    {
+      _can_reconfigure = _is_reconfigured = false;
+    }
+
+    switch
+    ( _tap )
+    {
+      case SINGLE_TAP: on_timeout( t_ticks, &restart ); break;
+      case DOUBLE_TAP: on_timeout( t_ticks, &save_region ); break;
+      case TRIPLE_TAP: on_timeout( t_ticks, &flip_use_controller ); break;
+    }
+
+    if ( _tap > TRIPLE_TAP ) _tap = 0;
   }
+
+  on_timeout( t_ticks, &default_tap );
 }
 
 /*
- * 
- * Overclock stuff
- * 
- */
+
+   Overclock stuff
+
+*/
 
 #define FSYNC PB2 // Can be moved to another pin
 #define SCLOCK PB5
@@ -243,10 +264,10 @@ const double base{ 2.5e+7 };
 
 uint32_t CalculateFrequency( const double t_freq )
 {
-  const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2,28 ) / base ) )};
-  const uint32_t new_word{ ( ( hexval >> 14 ) &0x3fff ) |0x4000 };
+  const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / base ) )};
+  const uint32_t new_word{ ( ( hexval >> 14 ) & 0x3fff ) | 0x4000 };
 
-  return ( new_word<<16 ) | ( ( hexval&0x3fff ) |0x4000 );
+  return ( new_word << 16 ) | ( ( hexval & 0x3fff ) | 0x4000 );
 }
 
 void SerialWrite( const uint16_t t_hlf_word )
@@ -254,11 +275,10 @@ void SerialWrite( const uint16_t t_hlf_word )
   uint16_t data{ t_hlf_word };
 
   for
-  ( auto i{ 0 };i<16;++i )
+  ( auto i{ 0 }; i < 16; ++i )
   {
-    PORTB = ( data&0x8000 )?
-    PORTB|_BV( SDATA ) : PORTB&~_BV( SDATA );
-
+    PORTB = ( data & 0x8000 ) ?
+            PORTB | _BV( SDATA ) : PORTB & ~_BV( SDATA );
     ;;
     PORTB &= ~_BV( SCLOCK );
     ;;
@@ -269,12 +289,12 @@ void SerialWrite( const uint16_t t_hlf_word )
   PORTB &= ~_BV( SDATA ); // Reset AD9833 device (active low)
   ;;
 }
- 
+
 void SerialSend( const double t_freq )
 {
   const uint32_t freq{ CalculateFrequency( t_freq ) };
   const uint16_t lsb{ static_cast< uint16_t >( freq ) },
-    msb{ static_cast< uint16_t >( freq>>16 ) };
+        msb{ static_cast< uint16_t >( freq >> 16 ) };
 
   PORTB &= ~_BV( FSYNC );
   ;;

@@ -14,20 +14,22 @@
 #define BUTTON_HOLD 1300U
 
 /*
- *
- * CTORS
- *
- */
+
+   CTORS
+
+*/
 
 #define INCREASE true
 #define DECREASE false
+#define MAJOR true
+#define MINOR false
 
 Controller::Controller(Console &t_console):
   console(t_console)
 {
   /*
-   *  Set Port D to input and clear pull-up resistors 
-   */
+      Set Port D to input and clear pull-up resistors
+  */
 
   CONTROLLER = CONTROLLER_INIT;
   CONTROLLER_DDR = CONTROLLER_CONF;
@@ -38,58 +40,61 @@ Controller::Controller(Console &t_console):
 }
 
 /*
- *
- * FUNCTIONS
- *
- */
 
-void Controller::poll( const bool t_signal,const uint8_t t_buttons )
+   FUNCTIONS
+
+*/
+
+void Controller::poll( const bool t_signal, const uint8_t t_buttons )
 {
   /*
-   * The idea here is just to copy the port register into the _on_read variable.
-   * When the SELECT signal from the console is high the ports' values are
-   * shifted 8 bits to the left.
-   * 
-   * The registers read from an active low signal e.g.
-   * if   ( SIGNAL == LOW  && START/C:pin1 == LOW ) then 'START' is expressed
-   * elif ( SIGNAL == HIGH && START/C:pin1 == LOW ) then 'C' is expressed 
-   * 
-   */
+     The idea here is just to copy the port register into the _on_read variable.
+     When the SELECT signal from the console is high the ports' values are
+     shifted 8 bits to the left.
 
-  _on_read &= t_signal==false? \
-  ( t_buttons|0xfe ) <<8:
-  ( t_buttons|0xfe );
+     The registers read from an active low signal e.g.
+     if   ( SIGNAL == LOW  && START/C:pin1 == LOW ) then 'START' is expressed
+     elif ( SIGNAL == HIGH && START/C:pin1 == LOW ) then 'C' is expressed
 
-  _on_read |= t_signal==true? \
-  ( t_buttons^0xfe ) <<8:
-  ( t_buttons^0xfe );
+  */
+
+  _on_read &= t_signal == false ? \
+              ( t_buttons | 0xfe ) << 8 :
+              ( t_buttons | 0xfe );
+
+  _on_read |= t_signal == true ? \
+              ( t_buttons ^ 0xfe ) << 8 :
+              ( t_buttons ^ 0xfe );
 }
 
 void Controller::handle( const uint32_t t_ticks )
 {
+  if ( !console.controller() ) return;
 
   static uint16_t last_read{ 0 };
   static uint32_t delta{ BUTTON_HOLD };
-  const uint16_t  status{ ( _on_read&PAD_MASK ) };
-  const uint32_t debounce{ t_ticks-delta };
+  const uint16_t  status{ ( _on_read & PAD_MASK ) };
+  const uint32_t debounce{ t_ticks - delta };
 
   if
-  ( last_read!=status || debounce > BUTTON_HOLD)
-    delta=t_ticks;
+  ( last_read != status || debounce > BUTTON_HOLD)
+    delta = t_ticks;
   else
     return;
 
   switch
   ( status )
   {
-    case OVERCLOCK_UP:    console.overclock( INCREASE ); break;
-    case OVERCLOCK_DOWN:  console.overclock( DECREASE ); break;
-    case REGION_FORWARD:  console.reconfigure( console.region()-- ); break;
-    case REGION_BACKWARD: console.reconfigure( console.region()++ ); break;
-    case IN_GAME_RESET:   console.restart(); break;
-    case SAVE_REGION:     console.save_region(); break;
-    case CHECK_FREQUENCY: console.check_frequency(); break;
+    case OVERCLOCK_UP_MI:   console.overclock( INCREASE, MINOR ); break;
+    case OVERCLOCK_UP_MA:   console.overclock( INCREASE, MAJOR ); break;
+    case OVERCLOCK_DOWN_MI: console.overclock( DECREASE, MINOR ); break;
+    case OVERCLOCK_DOWN_MA: console.overclock( DECREASE, MAJOR ); break;
+    case REGION_FORWARD:    console.reconfigure( console.region()-1 ); break;
+    case REGION_BACKWARD:   console.reconfigure( console.region()+1 ); break;
+    case IN_GAME_RESET:     console.restart(); break;
+    case SAVE_REGION:       console.save_region(); break;
+    case CHECK_FREQUENCY:   console.check_frequency(); break;
   }
 
-  last_read=status;
+  last_read = status;
 }

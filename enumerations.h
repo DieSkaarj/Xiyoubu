@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-enum RESET_PRESS_TYPE
+enum ETap
 {
   NOT_TAPPED = 0,
   SINGLE_TAP = 1,
@@ -11,15 +11,21 @@ enum RESET_PRESS_TYPE
   TRIPLE_TAP = 3
 };
 
-enum eREGION : uint8_t{ JAP = 0x4,EUR = 0x8,USA = 0xc };
-inline eREGION operator++( eREGION v ){ if( v == JAP ) return EUR; if( v == EUR ) return USA; if( v == USA ) return JAP; };
-inline eREGION operator--( eREGION v ){ if( v == JAP ) return USA; if( v == EUR ) return JAP; if( v == USA ) return EUR; };
+enum ERegion : uint8_t { INV = 0x0, JAP = 0b01, EUR = 0b10, USA = 0b11 };
+inline ERegion operator++( const ERegion v ) {
+  return ( ++v ) > USA ? JAP : v;
+};
+inline ERegion operator--( const ERegion v ) {
+  return ( --v ) < JAP ? USA : v;
+};
 
-enum eLED : uint8_t
+enum ELed : uint8_t
 {
-  // RGB R=1000, G=0001, B=0010
+  /*
+     PORTA PIN:
+     RGB R=0b1000, G=0b0001, B=0b0010
+  */
   LED_OFF = 0b0000,
-  
   GREEN = 0b0001,
   BLUE = 0b0010,
   CYAN = 0b0011,
@@ -29,7 +35,7 @@ enum eLED : uint8_t
   WHITE = 0b1011
 };
 
-enum : pad_button_t
+enum EPad : pad_combo_t
 {
   START = 0x2,
   A = 0x4,

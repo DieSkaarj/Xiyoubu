@@ -14,11 +14,15 @@ Default config...
 - - **D-PAD**
 - - - **RIGHT** - Region Cycle Forward (see: fig. 1)
 - - - **LEFT** - Region Cycle Backward (see: fig. 1)
-- - - **UP** - Overclock (+) (Step up .5Mhz)
-- - - **DOWN** - Overclock (-) (Step down .5Mhz)
+- - - **UP** - Save current region to EEPROM
+- - - **DOWN** -  Check Overclocking (see: fig. 2)
 - Menu B: **(START + B + [...])**
-- - **A** Save current region to EEPROM
-- - **C** Check Overclock value (see: fig. 2)
+- - **D-PAD**
+- - - **UP** - Overclock (+) (Step up MAJ)
+- - - **RIGHT** - Overclock (+) (Step up MIN)
+- - - **DOWN** - Overclock (-) (Step down MAJ)
+- - - **LEFT** - Overclock (-) (Step down MIN)
+
 
 #### Console
 - Hold **RESET** to cycle regions

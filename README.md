@@ -48,7 +48,7 @@ Default config...
 |12+|White|
 
 ### Status
-- v1.01
+- v1.04
 - - Tested on: MD2 VA1 PAL
 
 ### Features

@@ -24,8 +24,8 @@
 #define MAJOR true
 #define MINOR false
 
-Controller::Controller(Console &t_console):
-  console(t_console)
+Controller::Controller( const Console *&t_console ):
+  console( t_console )
 {
   /*
       Set Port D to input and clear pull-up resistors
@@ -74,7 +74,7 @@ void Controller::poll( const bool t_signal, const uint8_t t_buttons )
 
 void Controller::handle( const uint32_t t_ticks )
 {
-  if ( !console.controller() ) return;
+  if ( !console->controller() ) return;
 
   static uint16_t last_read{ 0 };
   static uint32_t delta{ BUTTON_HOLD };
@@ -90,15 +90,15 @@ void Controller::handle( const uint32_t t_ticks )
   switch
   ( status )
   {
-    case OVERCLOCK_UP_MI:   console.overclock( INCREASE, MINOR ); break;
-    case OVERCLOCK_UP_MA:   console.overclock( INCREASE, MAJOR ); break;
-    case OVERCLOCK_DOWN_MI: console.overclock( DECREASE, MINOR ); break;
-    case OVERCLOCK_DOWN_MA: console.overclock( DECREASE, MAJOR ); break;
-    case REGION_FORWARD:    console.reconfigure( console.region()-1 ); break;
-    case REGION_BACKWARD:   console.reconfigure( console.region()+1 ); break;
-    case IN_GAME_RESET:     console.restart(); clear(); break;
-    case SAVE_REGION:       console.save_region(); break;
-    case CHECK_FREQUENCY:   console.check_frequency(); break;
+    case OVERCLOCK_UP_MI:   console->overclock( INCREASE, MINOR ); break;
+    case OVERCLOCK_UP_MA:   console->overclock( INCREASE, MAJOR ); break;
+    case OVERCLOCK_DOWN_MI: console->overclock( DECREASE, MINOR ); break;
+    case OVERCLOCK_DOWN_MA: console->overclock( DECREASE, MAJOR ); break;
+    case REGION_FORWARD:    console->reconfigure( console->region()-1 ); break;
+    case REGION_BACKWARD:   console->reconfigure( console->region()+1 ); break;
+    case IN_GAME_RESET:     console->restart(); clear(); break;
+    case SAVE_REGION:       console->save_region(); break;
+    case CHECK_FREQUENCY:   console->check_frequency(); break;
   }
 
   last_read = status;

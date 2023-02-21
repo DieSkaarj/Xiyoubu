@@ -13,7 +13,7 @@
 class CPU_Clk
 {
     const double _min, _max, _step_s, _step_l;
-    double _frequency, _step;
+    mutable double _frequency, _step;
 
   public:
 
@@ -53,7 +53,7 @@ class Console
        Desc:  Lookup table for region switching.
 
     */
-    static constexpr Mode mode[4] {
+    constexpr static Mode mode[4] {
       { LED_OFF, INV },
       { LED_JAP, JAP },
       { LED_EUR, EUR },
@@ -130,8 +130,8 @@ class Console
 
     static uint32_t _chronos, _tap_timer;
 
-    CPU_Clk _clock;
-    uint8_t \
+    mutable CPU_Clk _clock;
+    mutable uint8_t \
     _console_region: 2,
                      _use_controller: 1,
                      _btn_press: 1,

@@ -210,7 +210,7 @@ void Console::handle( const uint32_t t_ticks )
   else
   {
     if ( _can_reconfigure ) _can_reconfigure = false;
-    if ( _is_reconfigured ) _is_reconfigured = false;
+    if ( _is_reconfigured ) _tap = _is_reconfigured = false;
 
     switch
     ( _tap )

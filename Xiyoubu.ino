@@ -26,7 +26,7 @@
 #include "console.h"
 #include "controller.h"
 
-static Console * mega_drive;
+static const Console *mega_drive;
 static const Controller *pad;
 
 ISR( INT1_vect )
@@ -51,7 +51,7 @@ int main()
   noInterrupts();
 
   mega_drive = new Console( millis() );
-  pad = new Controller( *mega_drive );
+  pad = new Controller( mega_drive );
 
   interrupts();
 

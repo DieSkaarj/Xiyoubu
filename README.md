@@ -16,6 +16,7 @@ Menu I: **(START + A + C + [...])**
 - - **LEFT** - Region Cycle Backward (see: fig. 1)
 - - **UP** - Save current region to EEPROM
 - - **DOWN** -  Check Overclocking (see: fig. 2)
+
 Menu II: **(START + B + [...])**
 - **D-PAD**
 - - **UP** - Overclock (+) (Step up MAJ)

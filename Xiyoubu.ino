@@ -23,6 +23,7 @@
 
 */
 
+#include "config.h"
 #include "console.h"
 #include "controller.h"
 

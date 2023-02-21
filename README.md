@@ -64,7 +64,7 @@ Default config...
 * Ko-fi blog discussing the development of Xiyoubu: https://ko-fi.com/dieskaarj
 * BlastEd - Mega Drive/Genesis Art Tool: https://dieskaarj.itch.io/blasted
 
-### Thank you for your hard work and research
+### Thank you for your hard work, research and resources
 * **SukkoPera:** https://github.com/SukkoPera/MegaDrivePlusPlus
 * **TurBoss:** https://github.com/TurBoss/MegaDrivePlusPlus/tree/overclock
 * **Smudger D:** https://stompville.co.uk/?p=853
@@ -73,6 +73,7 @@ Default config...
 * **Charles MacDonald:** https://gendev.spritesmind.net/forum/viewtopic.php?t=1262
 * **Liam Riordan:** https://www.analog.com/media/en/technical-documentation/application-notes/AN-1070.pdf
 * **Atmel:** http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-9157-automotive-microcontrollers-attiny88_datasheet.pdf
+* **Analog Devices:** https://www.analog.com/media/en/technical-documentation/data-sheets/ad9833.pdf
 
 ### License
 Xiyoubu (software) is Copyright © 2023 by David 'Erosion' Oberlin.

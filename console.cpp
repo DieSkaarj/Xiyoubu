@@ -191,26 +191,10 @@ int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 
 void Console::handle( const uint32_t t_ticks )
 {
-  if
-  ( _btn_press && _tap == SINGLE_TAP )
-  {
-    if
-    ( ( t_ticks - _tap_timer ) > BUTTON_RESET_TIME )
-    {
-      if ( ( _is_reconfigured = _can_reconfigure ) )
-      {
-        reconfigure( _console_region + 1 );
-      }
-      else
-        _can_reconfigure = true;
-
-      _tap_timer = t_ticks;
-    }
-  }
+  if( _btn_press && _tap == SINGLE_TAP ) cycle_timeout( t_ticks );
   else
   {
-    if ( _can_reconfigure ) _can_reconfigure = false;
-    if ( _is_reconfigured ) _tap = _is_reconfigured = false;
+    reset_cycle();
 
     switch
     ( _tap )

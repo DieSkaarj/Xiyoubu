@@ -113,15 +113,41 @@ class Console
 
     int tap_timeout( uint32_t, void(Console::*)() );
 
-    void led_info( ELed t_color ) {
+    int cycle_timeout( uint32_t t_ticks )
+    {
+      static uint32_t timer{ 0 };
+
+      if
+      ( ( t_ticks - timer ) > BUTTON_RESET_TIME )
+      {
+        if ( ( _is_reconfigured = _can_reconfigure ) )
+        {
+          reconfigure( _console_region + 1 );
+        }
+        else
+          _can_reconfigure = true;
+  
+        timer = t_ticks;
+      }
+    }
+
+    void reset_cycle()
+    {
+      if ( _can_reconfigure ) _can_reconfigure = false;
+      if ( _is_reconfigured ) _tap = _is_reconfigured = false;
+    }
+
+    void led_info( ELed t_color1,ELed t_color2=0 ) {
+
+      t_color2=t_color2?t_color2:t_color1;
 
       clear_led_port();
       delay( 250 );
-      set_led_color( t_color );
+      set_led_color( t_color1 );
       delay( 150 );
       clear_led_port();
       delay( 150 );
-      set_led_color( t_color );
+      set_led_color( t_color2 );
       delay( 150 );
       clear_led_port();
       delay( 250 );
@@ -156,7 +182,15 @@ class Console
     void check_controller_preference() {
       ELed color{_use_controller ? GREEN : RED};
 
-      led_info( color );
+      clear_led_port();
+      delay( 250 );
+      set_led_color( CYAN );
+      delay( 150 );
+      set_led_color( color );
+      delay( 150 );
+      clear_led_port();
+      delay( 250 );
+      set_led_color( led() );
     }
 
 

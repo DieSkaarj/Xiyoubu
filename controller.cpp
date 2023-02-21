@@ -45,6 +45,11 @@ Controller::Controller(Console &t_console):
 
 */
 
+void Controller::clear()
+{
+  _on_read = 0xffffffff;
+}
+
 void Controller::poll( const bool t_signal, const uint8_t t_buttons )
 {
   /*
@@ -91,7 +96,7 @@ void Controller::handle( const uint32_t t_ticks )
     case OVERCLOCK_DOWN_MA: console.overclock( DECREASE, MAJOR ); break;
     case REGION_FORWARD:    console.reconfigure( console.region()-1 ); break;
     case REGION_BACKWARD:   console.reconfigure( console.region()+1 ); break;
-    case IN_GAME_RESET:     console.restart(); break;
+    case IN_GAME_RESET:     console.restart(); clear(); break;
     case SAVE_REGION:       console.save_region(); break;
     case CHECK_FREQUENCY:   console.check_frequency(); break;
   }

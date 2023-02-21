@@ -66,8 +66,6 @@ void CPU_Clk::reset( const double t_mhz )
 }
 
 Console::Console( const uint32_t t_ticks ):
-  _start_time( t_ticks ),
-  _lock( true ),
   _use_controller( false ),
   _btn_press( false ),
   _can_reconfigure( false ),
@@ -75,24 +73,20 @@ Console::Console( const uint32_t t_ticks ):
   _tap( 0 ),
   _console_region( INV )
 {
-  CPU = CPU_INIT;
-  CPU_DDR =  CPU_CONF;
-
-  CONSOLE = CONSOLE_INIT;
-  CONSOLE_DDR = CONSOLE_CONF;
-
-  LED = LED_INIT;
-  LED_DDR = LED_CONF;
-
   PCICR = _BV( PCIE1 );
   PCMSK1 = _BV( PCINT9 );
 
-  SerialSend( _clock );
+  LED = LED_INIT;
+  LED_DDR = LED_CONF;
+  CONSOLE = CONSOLE_INIT;
+  CONSOLE_DDR = CONSOLE_CONF;
+  CPU = CPU_INIT;
+  CPU_DDR =  CPU_CONF;
 
   controller( load_controller_preference() );
-  check_controller_preference();
-
   reconfigure( load_region() );
+
+  SerialSend( _clock );
 }
 
 /*
@@ -105,11 +99,13 @@ void Console::restart()
 {
   noInterrupts();
   {
+
     clear_led_port();
     CONSOLE &= ~_BV( RESET );
     delayMicroseconds( 168e+4 );
     CONSOLE |= _BV( RESET ) | _BV( BUTTON );
-    delay( 2000 );
+    delay( 16800 );
+
   }
   interrupts();
 
@@ -150,14 +146,9 @@ void Console::poll( const bool t_button )
   */
   const uint32_t ticks{ millis() };
 
-  if
-  ( ( _btn_press = !t_button ) )
-  {
-    ++_tap;
-    _chronos = ticks;
-  }
+  if ( !tap_timeout( ticks, &default_tap ) ) _chronos = ticks;
 
-  on_timeout( ticks, &default_tap );
+  if ( ( _btn_press = !t_button ) ) ++_tap;
 }
 
 void Console::reconfigure( const ERegion t_region )
@@ -186,7 +177,7 @@ void Console::reconfigure( const ERegion t_region )
 
 */
 
-int Console::on_timeout( uint32_t t_ticks, void( Console::*t_func)() )
+int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 {
   if
   ( ( t_ticks - _chronos ) > BUTTON_TAPOUT )
@@ -200,50 +191,37 @@ int Console::on_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 
 void Console::handle( const uint32_t t_ticks )
 {
-  if ( _btn_press )
+  if
+  ( _btn_press && _tap == SINGLE_TAP )
   {
-    switch
-    ( _tap )
+    if
+    ( ( t_ticks - _tap_timer ) > BUTTON_RESET_TIME )
     {
-      case SINGLE_TAP:
-        {
-          if
-          ( ( t_ticks - _tap_timer ) > BUTTON_RESET_TIME )
-          {
-            if ( ( _is_reconfigured = _can_reconfigure ) )
-            {
-              reconfigure( _console_region + 1 );
-            }
-            else
-              _can_reconfigure = true;
+      if ( ( _is_reconfigured = _can_reconfigure ) )
+      {
+        reconfigure( _console_region + 1 );
+      }
+      else
+        _can_reconfigure = true;
 
-            _tap_timer = t_ticks;
-          }
-        }
-        break;
+      _tap_timer = t_ticks;
     }
   }
   else
   {
-    _can_reconfigure = false;
-
-    if ( _is_reconfigured )
-    {
-      _can_reconfigure = _is_reconfigured = false;
-    }
+    if ( _can_reconfigure ) _can_reconfigure = false;
+    if ( _is_reconfigured ) _is_reconfigured = false;
 
     switch
     ( _tap )
     {
-      case SINGLE_TAP: on_timeout( t_ticks, &restart ); break;
-      case DOUBLE_TAP: on_timeout( t_ticks, &save_region ); break;
-      case TRIPLE_TAP: on_timeout( t_ticks, &flip_use_controller ); break;
+      case SINGLE_TAP: tap_timeout( t_ticks, &restart ); break;
+      case DOUBLE_TAP: tap_timeout( t_ticks, &save_region ); break;
+      case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); break;
     }
 
     if ( _tap > TRIPLE_TAP ) _tap = 0;
   }
-
-  on_timeout( t_ticks, &default_tap );
 }
 
 /*

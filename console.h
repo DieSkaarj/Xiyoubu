@@ -53,16 +53,12 @@ class Console
        Desc:  Lookup table for region switching.
 
     */
-    const Mode mode[4]
-    {
+    static constexpr Mode mode[4] {
       { LED_OFF, INV },
       { LED_JAP, JAP },
       { LED_EUR, EUR },
       { LED_USA, USA }
     };
-
-    const uint32_t _start_time;
-    bool _lock;
 
     static ERegion load_region() {
       return static_cast< ERegion >( eeprom_read_byte( 0 ) );
@@ -115,27 +111,7 @@ class Console
 
     void default_tap() { /* Dummy Function */ }
 
-    static uint32_t _chronos, _tap_timer;
-
-    int on_timeout( uint32_t, void(Console::*)() );
-
-    CPU_Clk _clock;
-    uint8_t \
-    _console_region: 2,
-    _use_controller: 1,
-    _btn_press: 1,
-    _can_reconfigure: 1,
-    _is_reconfigured: 1,
-    _tap: 2;
-
-  public:
-
-    void overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
-    void check_frequency();
-
-    bool controller() {
-      return _use_controller;
-    }
+    int tap_timeout( uint32_t, void(Console::*)() );
 
     void led_info( ELed t_color ) {
 
@@ -152,29 +128,48 @@ class Console
       set_led_color( led() );
     }
 
-    void check_controller_preference() {
+    static uint32_t _chronos, _tap_timer;
 
+    CPU_Clk _clock;
+    uint8_t \
+    _console_region: 2,
+                     _use_controller: 1,
+                     _btn_press: 1,
+                     _can_reconfigure: 1,
+                     _is_reconfigured: 1,
+                     _tap: 2;
+
+  public:
+
+    void overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
+    void check_frequency();
+    void restart();
+    void save_region();
+    void poll( const bool );
+    void reconfigure( const ERegion t_region );
+    void handle( const uint32_t t_ticks );
+
+    bool controller() {
+      return _use_controller;
+    }
+
+    void check_controller_preference() {
       ELed color{_use_controller ? GREEN : RED};
 
       led_info( color );
     }
 
-    void restart();
 
     const ERegion region() const {
       return mode[ _console_region ].region;
     }
-    void save_region();
-
-    void poll( const bool );
-    void reconfigure( const ERegion t_region );
-    void handle( const uint32_t t_ticks );
 
     Console( const uint32_t );
 };
 
-inline void Console::save_region()
-{
+inline constexpr Console::Mode Console::mode[4];
+
+inline void Console::save_region() {
   eeprom_update_byte(0, _console_region);
 
   led_info( WHITE );

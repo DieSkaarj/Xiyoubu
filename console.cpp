@@ -115,9 +115,9 @@ void Console::restart()
 void Console::overclock( const bool dir, const bool sz )
 {
   _clock.step( sz );
-
-  if ( dir ) ++_clock;
-  else --_clock;
+  _clock=dir?
+     ++_clock:
+     --_clock;
 
   check_frequency();
   _clock.reset( _clock );

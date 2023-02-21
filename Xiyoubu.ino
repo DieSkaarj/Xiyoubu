@@ -55,7 +55,7 @@ int main()
 
   interrupts();
 
-  delay( 1000 );
+  delay( STARTUP_TIME );
 
   mega_drive->check_controller_preference();
 

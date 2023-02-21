@@ -41,7 +41,7 @@ constexpr milliseconds_t \
 BUTTON_RESET_TIME { .13e+4 }, \
 BUTTON_TAPOUT     { .1e+4 }, \
 STARTUP_TIME      { .9e+4 }, \
-CPU_HALT_TIME     { .15e+4 };
+CPU_HALT_TIME     { .5e+2 };
 
 /********************/
 

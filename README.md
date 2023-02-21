@@ -34,7 +34,7 @@ Menu II: **(START + B + [...])**
 *Fig. 1*
  |Region|LED| 
 |---|---|
-|USA|Cyan| 
+|USA|Blue| 
 |PAL|Red|
 |JAP|Magenta|
 

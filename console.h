@@ -118,7 +118,7 @@ class Console
       static uint32_t timer{ 0 };
 
       if
-      ( ( t_ticks - timer ) > BUTTON_RESET_TIME )
+      ( _tap == SINGLE_TAP &&( t_ticks - timer ) > BUTTON_RESET_TIME )
       {
         if ( ( _is_reconfigured = _can_reconfigure ) )
         {
@@ -131,7 +131,7 @@ class Console
       }
     }
 
-    void reset_cycle()
+    void cycle_reset()
     {
       if ( _can_reconfigure ) _can_reconfigure = false;
       if ( _is_reconfigured ) _tap = _is_reconfigured = false;
@@ -189,6 +189,8 @@ class Console
       set_led_color( color );
       delay( 150 );
       clear_led_port();
+      delay( 150 );
+      set_led_color( color );
       delay( 250 );
       set_led_color( led() );
     }

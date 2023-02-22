@@ -180,7 +180,8 @@ void Console::reconfigure( const ERegion t_region )
 int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 {
   if
-  ( ( t_ticks - _chronos ) > BUTTON_TAPOUT )
+  ( ( t_ticks - _chronos ) > BUTTON_TAPOUT 
+  && _tap == 1 )
   {
     ( this->*t_func )();
     return ( _tap = 0 );
@@ -191,10 +192,13 @@ int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 
 void Console::handle( const uint32_t t_ticks )
 {
-  if( _btn_press && _tap == SINGLE_TAP ) cycle_timeout( t_ticks );
+  if( _btn_press )
+  {
+    cycle_timeout( t_ticks );
+  }
   else
   {
-    reset_cycle();
+    cycle_reset();
 
     switch
     ( _tap )

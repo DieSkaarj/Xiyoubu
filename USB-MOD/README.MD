@@ -1,4 +1,4 @@
-These two files offer a solution to fix a USB-C fitting on to a Mega Drive and/or Mega CD unit.
+These two files offer a solution to fix a USB-C fitting on to a Mega Drive II and/or Mega CD II unit.
 
 ***Scale the nut to be slightly larger.***
 

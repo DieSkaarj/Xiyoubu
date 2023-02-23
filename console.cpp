@@ -146,7 +146,7 @@ void Console::poll( const bool t_button )
   */
   const uint32_t ticks{ millis() };
 
-  if ( !tap_timeout( ticks, &default_tap ) ) _chronos = ticks;
+  if ( !tap_timeout( ticks, &default_tap ) ) tap_reset( ticks );
 
   if ( ( _btn_press = !t_button ) ) ++_tap;
 }
@@ -180,11 +180,11 @@ void Console::reconfigure( const ERegion t_region )
 int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 {
   if
-  ( ( t_ticks - _chronos ) > BUTTON_TAPOUT 
-  && _tap == 1 )
+  ( ( t_ticks - _chronos ) > BUTTON_TAPOUT )
   {
     ( this->*t_func )();
-    return ( _tap = 0 );
+    tap_reset( t_ticks );
+    return 0;
   }
   else
     return 1;
@@ -194,11 +194,11 @@ void Console::handle( const uint32_t t_ticks )
 {
   if( _btn_press )
   {
-    cycle_timeout( t_ticks );
+    cycle_region_timeout( t_ticks );
   }
   else
   {
-    cycle_reset();
+    cycle_region_reset();
 
     switch
     ( _tap )
@@ -208,7 +208,7 @@ void Console::handle( const uint32_t t_ticks )
       case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); break;
     }
 
-    if ( _tap > TRIPLE_TAP ) _tap = 0;
+    if ( _tap > TRIPLE_TAP ) tap_reset( t_ticks );
   }
 }
 

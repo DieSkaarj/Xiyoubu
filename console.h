@@ -113,7 +113,7 @@ class Console
 
     int tap_timeout( uint32_t, void(Console::*)() );
 
-    int cycle_timeout( uint32_t t_ticks )
+    int cycle_region_timeout( uint32_t t_ticks )
     {
       static uint32_t timer{ 0 };
 
@@ -131,7 +131,13 @@ class Console
       }
     }
 
-    void cycle_reset()
+    void tap_reset( const uint32_t t_ticks )
+    {
+      _tap = 0;
+      _chronos = t_ticks;      
+    }
+
+    void cycle_region_reset()
     {
       if ( _can_reconfigure ) _can_reconfigure = false;
       if ( _is_reconfigured ) _tap = _is_reconfigured = false;
@@ -156,8 +162,8 @@ class Console
 
     static uint32_t _chronos, _tap_timer;
 
-    mutable CPU_Clk _clock;
-    mutable uint8_t \
+    static CPU_Clk _clock;
+    uint8_t \
     _console_region: 2,
                      _use_controller: 1,
                      _btn_press: 1,
@@ -204,7 +210,7 @@ class Console
 };
 
 inline constexpr Console::Mode Console::mode[4];
-
+inline CPU_Clk Console::_clock;
 inline void Console::save_region() {
   eeprom_update_byte(0, _console_region);
 

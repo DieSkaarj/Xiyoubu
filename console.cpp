@@ -123,6 +123,13 @@ void Console::overclock( const bool dir, const bool sz )
   _clock.reset( _clock );
 }
 
+void Console::on_startup()
+{
+  check_controller_preference();
+
+  tap_reset( millis() );
+}
+
 void Console::check_frequency()
 {
   ELed color;
@@ -146,8 +153,8 @@ void Console::poll( const bool t_button )
   */
   const uint32_t ticks{ millis() };
 
-  if ( !tap_timeout( ticks, &default_tap ) ) tap_reset( ticks );
-
+  _chronos = ticks;
+  
   if ( ( _btn_press = !t_button ) ) ++_tap;
 }
 

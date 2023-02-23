@@ -173,6 +173,7 @@ class Console
 
   public:
 
+    void on_startup();
     void overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
     void check_frequency();
     void restart();

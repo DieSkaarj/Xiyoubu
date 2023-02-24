@@ -4,21 +4,21 @@
         *          |                              +-------+                              |          *
         *          |               +--------------|  USB  |--------------+               |          *
         *          |               |              +-------+              |               |          *
-        *   P_A2   |               | [ ] 15                        14[x] | Halt (MD CPU) |   P_B7   * Blue
-Red     *   P_A3   | LED R         | [x] 16                    SCK 13[x] | Clock (AD9833)|   P_B5   * Yellow
-Green   *   P_A0   | LED G         | [x] A6                   MISO 12[ ] |               |   P_B4   * 
-Blue    *   P_A1   | LED B         | [x] A7                   MOSI 11[x] | Data  (AD9833)|   P_B3   * Green
-White   *   P_C0   | Reset Write   | [x] A0                     SS 10[x]~| FSYNC (AD9833)|   P_B2   * Grey
-Black   *   P_C1   | Reset Read    | [x] A1                         9[ ]~|               |   P_B1   * 
-Grey    *   P_C2   | JP1/2 (JP/EN) | [x] A2                         8[ ] |               |   P_B0   * 
-Grey    *   P_C3   | JP3/4 (50/60) | [x] A3                         7[x] | Pad Right     |   P_D7   * Yellow
-        *   P_C4   |               | [ ] A4/SDA                     6[x] | Pad Left      |   P_D6   * Orange
-        *   P_C5   |               | [ ] A5/SCL                     5[x] | Pad Down      |   P_D5   * Red
-        *   P_C7   |               | [ ] 25                         4[x] | Pad Up        |   P_D4   * Brown
-        *          |               | [ ] RST                   INT1/3[x] | Pad (Signal)  |   P_D3   * Grey
-        *   P_D0   | (On-board LED)| [-] 0                         5V[x] | 5V            |          * Red
-White   *   P_D1   | Pad Start/C   | [x] 1      VCC  MOSI GND     GND[x] | GND           |          * White
-Blue    *   P_D2   | Pad A/B       | [x] 2/INT0 [ ]  [ ]  [ ]     VIN[ ] |               |          *
+        *   P_A2   |               | [ ] 15                        14[*] | Halt (MD CPU) |   P_B7   * Blue
+Red     *   P_A3   | LED R         | [*] 16                    SCK 13[*] | Clock (AD9833)|   P_B5   * Yellow
+Green   *   P_A0   | LED G         | [*] A6                   MISO 12[ ] |               |   P_B4   * 
+Blue    *   P_A1   | LED B         | [*] A7                   MOSI 11[*] | Data  (AD9833)|   P_B3   * Green
+White   *   P_C0   | Reset Write   | [*] A0                     SS 10[*]~| FSYNC (AD9833)|   P_B2   * Grey
+Black   *   P_C1   | Reset Read    | [*] A1                         9[ ]~| 5V (AD9833)   |   P_B1   * 
+Grey    *   P_C2   | JP1/2 (JP/EN) | [*] A2                         8[ ] | GND (AD9833)  |   P_B0   * 
+Grey    *   P_C3   | JP3/4 (50/60) | [*] A3                         7[*] | Pad Right     |   P_D7   * Yellow
+Grey    *   P_C4   | Bios Pin38    | [*] A4/SDA                     6[*] | Pad Left      |   P_D6   * Orange
+Grey    *   P_C5   | Bios Pin39    | [*] A5/SCL                     5[*] | Pad Down      |   P_D5   * Red
+        *   P_C7   |               | [ ] 25                         4[*] | Pad Up        |   P_D4   * Brown
+        *          |               | [ ] RST                   INT1/3[*] | Pad (Signal)  |   P_D3   * Grey
+        *   P_D0   |               | [ ] 0                         5V[*] | 5V            |          * Red
+White   *   P_D1   | Pad Start/C   | [*] 1      VCC  MOSI GND     GND[*] | GND           |          * White
+Blue    *   P_D2   | Pad A/B       | [*] 2/INT0 [ ]  [ ]  [ ]     VIN[ ] |               |          *
         *          |               |            [ ]  [ ]  [ ]            |               |          *
         *          |               |            MISO SCK  RST            |               |          *
         *         /                +--ATtiny88---------------------------+               \          *

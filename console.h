@@ -67,8 +67,9 @@ class Console
     void reset_clock();
 
     void clear_sys_port() {
-      PORTC &= ~(0xc);
+      PORTC &= ~(0x3c);
     }
+
     void clear_led_port() {
       PORTA &= ~(0xf);
     }
@@ -76,14 +77,16 @@ class Console
     void write_led_port( const uint8_t v ) {
       PORTA |= v & 0xf;
     }
+
     void write_sys_port( const uint8_t v ) {
-      PORTC |= v & 0xc;
+      PORTC |= v & 0x3c;
     }
 
     void set_sys_region( const ERegion region ) {
       clear_sys_port();
-      write_sys_port( region << 2 );
+      write_sys_port( region << 4 | region << 2 );
     }
+
     void set_led_color( const ELed color )      {
       clear_led_port();
       write_led_port( color );
@@ -173,7 +176,7 @@ class Console
 
   public:
 
-    void on_startup();
+    void on_startup( const uint32_t );
     void overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
     void check_frequency();
     void restart();

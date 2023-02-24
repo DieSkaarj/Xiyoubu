@@ -18,7 +18,7 @@
 #define RGB_G PA0
 #define RGB_B PA1
 
-#define CONSOLE_CONF 0xd
+#define CONSOLE_CONF 0x3d
 #define CONSOLE_INIT 0x3
 
 #define CPU PORTB
@@ -48,10 +48,10 @@ void SerialSend( const double );
 
 CPU_Clk::CPU_Clk():
   _min( MIN_MHZ ), _max( MAX_MHZ ),
-  _step_s( STEP_MINOR ),
-  _step_l( STEP_MAJOR ),
+  _step_s( STEP_MI ),
+  _step_l( STEP_MA ),
   _frequency( MIN_MHZ ),
-  _step( STEP_MINOR )
+  _step( 0.0 )
 {
   /* Empty */
 }
@@ -61,7 +61,6 @@ void CPU_Clk::reset( const double t_mhz )
   halt( true );
   delay( CPU_HALT_TIME * .5 );
   SerialSend( _frequency = t_mhz );
-  delay( CPU_HALT_TIME * .5 );
   halt( false );
 }
 
@@ -123,8 +122,10 @@ void Console::overclock( const bool dir, const bool sz )
   _clock.reset( _clock );
 }
 
-void Console::on_startup()
+void Console::on_startup( const uint32_t t_wait )
 {
+  delay( t_wait );
+
   check_controller_preference();
 
   tap_reset( millis() );
@@ -173,8 +174,11 @@ void Console::reconfigure( const ERegion t_region )
   else
     _console_region = t_region;
 
+  halt( true );
+  delay( CPU_HALT_TIME * .5 );
   set_sys_region( region() );
   set_led_color( led() );
+  halt( false );
 }
 
 /*

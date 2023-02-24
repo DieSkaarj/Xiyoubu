@@ -23,6 +23,7 @@
 
 */
 
+#include "config.h"
 #include "console.h"
 #include "controller.h"
 
@@ -55,9 +56,7 @@ int main()
 
   interrupts();
 
-  delay( STARTUP_TIME );
-
-  mega_drive->on_startup();
+  mega_drive->on_startup( STARTUP_TIME );
 
   while ( true )
   {

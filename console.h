@@ -61,7 +61,7 @@ class Console
     };
 
     static const ERegion load_region() {
-      return static_cast< ERegion >( eeprom_read_byte( 0 ) );
+      return static_cast< ERegion >( eeprom_read_byte( REGION_LOC ) );
     }
 
     void reset_clock();
@@ -101,13 +101,13 @@ class Console
     }
 
     bool load_controller_preference() {
-      return eeprom_read_byte( 1 );
+      return eeprom_read_byte( CNTRLR_LOC );
     }
 
     void flip_use_controller() {
       _use_controller = !_use_controller;
 
-      eeprom_update_byte(1, _use_controller);
+      eeprom_update_byte( CNTRLR_LOC, _use_controller );
 
       check_controller_preference();
     }
@@ -116,7 +116,7 @@ class Console
 
     int tap_timeout( uint32_t, void(Console::*)() );
 
-    int cycle_region_timeout( uint32_t t_ticks )
+    void cycle_region_timeout( uint32_t t_ticks )
     {
       static uint32_t timer{ 0 };
 
@@ -132,6 +132,7 @@ class Console
 
         timer = t_ticks;
       }
+
     }
 
     void tap_reset( const uint32_t t_ticks )
@@ -170,7 +171,9 @@ class Console
     bool _use_controller,
          _btn_press,
          _can_reconfigure,
-         _is_reconfigured;
+         _is_reconfigured,
+         _is_overclocked,
+         _lock;
 
   public:
 
@@ -214,7 +217,7 @@ class Console
 inline constexpr Console::Mode Console::mode[4];
 inline CPU_Clk Console::_clock;
 inline void Console::save_region() {
-  eeprom_update_byte(0, _console_region);
+  eeprom_update_byte( REGION_LOC, _console_region );
 
   led_info( WHITE );
 }

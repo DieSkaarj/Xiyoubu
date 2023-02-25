@@ -3,6 +3,21 @@
 
 #include "enumerations.h"
 
+/**********************************/
+/*  CONSOLE RELATIVE EEPROM DATA  */
+/**********************************/
+constexpr byte_t \
+/*
+  What location on the EEPROM of
+  the MH-ATtiny88 to use, in bytes.
+*/
+/**********************************/
+
+REGION_LOC        { 0 },
+CNTRLR_LOC        { 2 };
+
+/**********************************/
+
 /******************************/
 /*  CONSOLE LED REGION CODING */
 /******************************/
@@ -22,7 +37,6 @@ constexpr ELed \
 LED_JAP           { MAGENTA }, \
 LED_EUR           { RED }, \
 LED_USA           { BLUE };
-
 
 /******************************/
 
@@ -57,10 +71,12 @@ constexpr frequency_t \
 */
 /******************/
 
-MAX_MHZ           { 12.5e+6 }, \
+MAX_MHZ           { 13.e+6 }, \
 MIN_MHZ           { 7.5e+6 }, \
-STEP_MINOR        { .1e+6 }, \
-STEP_MAJOR        { .2e+6 };
+PAL_MHZ           { 7.600489e+6 }, \
+NTSC_MHZ          { 7.670454e+6 },
+STEP_MI           { .1e+6 }, \
+STEP_MA           { .2e+6 };
 
 /******************/
 
@@ -107,7 +123,6 @@ OVERCLOCK_UP_MA   { MNU_II | UP }, \
 OVERCLOCK_UP_MI   { MNU_II | RIGHT }, \
 OVERCLOCK_DOWN_MA { MNU_II | DOWN }, \
 OVERCLOCK_DOWN_MI { MNU_II | LEFT };
-
 
 /******************/
 

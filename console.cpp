@@ -50,8 +50,8 @@ CPU_Clk::CPU_Clk():
   _min( MIN_MHZ ), _max( MAX_MHZ ),
   _step_s( STEP_MI ),
   _step_l( STEP_MA ),
-  _frequency( MIN_MHZ ),
-  _step( 0.0 )
+  _frequency( 7.5e+6 ),
+  _step( 0.f )
 {
   /* Empty */
 }
@@ -70,7 +70,7 @@ Console::Console( const uint32_t t_ticks ):
   _can_reconfigure( false ),
   _is_reconfigured( false ),
   _tap( 0 ),
-  _console_region( INV )
+  _console_region( load_region() )
 {
   PCICR = _BV( PCIE1 );
   PCMSK1 = _BV( PCINT9 );
@@ -83,8 +83,6 @@ Console::Console( const uint32_t t_ticks ):
   CPU_DDR =  CPU_CONF;
 
   SerialSend( _clock );
-
-  reconfigure();
 }
 
 /*
@@ -112,6 +110,8 @@ void Console::restart()
 
 void Console::overclock( const bool dir, const bool sz )
 {
+  if( !_is_overclocked ) _is_overclocked = true;
+
   _clock.step( sz );
 
   if ( dir ) ++_clock;
@@ -125,11 +125,9 @@ void Console::on_startup( const uint32_t t_wait )
 {
   delay( t_wait );
 
-  //reconfigure( load_region() );
-  controller( load_controller_preference() );
-//  check_controller_preference();
-
-  tap_reset( millis() );
+  reconfigure();
+  _lock = false;
+  check_controller_preference();
 }
 
 void Console::check_frequency()
@@ -150,14 +148,10 @@ void Console::poll( const bool t_button )
 {
   /*
      on CHANGE
-
-     Reset tap counter
   */
-  const uint32_t ticks{ millis() };
 
-  _chronos = ticks;
-  
   if ( ( _btn_press = !t_button ) ) ++_tap;
+  else _chronos = millis();
 }
 
 void Console::reconfigure( const ERegion t_region )
@@ -175,11 +169,16 @@ void Console::reconfigure( const ERegion t_region )
   else
     _console_region = t_region;
 
-  _clock.halt( true );
-  delay( CPU_HALT_TIME * .5 );
+  if( !_is_overclocked )
+  {
+    if( _console_region == USA || _console_region == JAP )
+      _clock.reset( NTSC_MHZ );
+    else
+      _clock.reset( PAL_MHZ );
+  }
+
   set_sys_region( region() );
   set_led_color( led() );
-  _clock.halt( false );
 }
 
 /*
@@ -204,6 +203,8 @@ int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 
 void Console::handle( const uint32_t t_ticks )
 {
+  if ( _lock ) return;
+
   if( _btn_press )
   {
     cycle_region_timeout( t_ticks );
@@ -215,9 +216,9 @@ void Console::handle( const uint32_t t_ticks )
     switch
     ( _tap )
     {
-      case SINGLE_TAP: tap_timeout( t_ticks, &restart ); break;
-      case DOUBLE_TAP: tap_timeout( t_ticks, &save_region ); break;
-      case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); break;
+      case SINGLE_TAP: tap_timeout( t_ticks, &restart ); return;
+      case DOUBLE_TAP: tap_timeout( t_ticks, &save_region ); return;
+      case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); return;
     }
 
     if ( _tap > TRIPLE_TAP ) tap_reset( t_ticks );

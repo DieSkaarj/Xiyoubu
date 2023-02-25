@@ -60,7 +60,7 @@ class Console
       { LED_USA, USA }
     };
 
-    static ERegion load_region() {
+    static const ERegion load_region() {
       return static_cast< ERegion >( eeprom_read_byte( 0 ) );
     }
 
@@ -121,7 +121,7 @@ class Console
       static uint32_t timer{ 0 };
 
       if
-      ( _tap == SINGLE_TAP &&( t_ticks - timer ) > BUTTON_RESET_TIME )
+      ( _tap == SINGLE_TAP && ( t_ticks - timer ) > BUTTON_RESET_TIME )
       {
         if ( ( _is_reconfigured = _can_reconfigure ) )
         {
@@ -129,7 +129,7 @@ class Console
         }
         else
           _can_reconfigure = true;
-  
+
         timer = t_ticks;
       }
     }
@@ -137,7 +137,7 @@ class Console
     void tap_reset( const uint32_t t_ticks )
     {
       _tap = 0;
-      _chronos = t_ticks;      
+      _chronos = t_ticks;
     }
 
     void cycle_region_reset()
@@ -146,9 +146,9 @@ class Console
       if ( _is_reconfigured ) _tap = _is_reconfigured = false;
     }
 
-    void led_info( ELed t_color1,ELed t_color2=0 ) {
+    void led_info( ELed t_color1, ELed t_color2 = 0 ) {
 
-      t_color2=t_color2?t_color2:t_color1;
+      t_color2 = t_color2 ? t_color2 : t_color1;
 
       clear_led_port();
       delay( 250 );
@@ -166,13 +166,11 @@ class Console
     static uint32_t _chronos, _tap_timer;
 
     static CPU_Clk _clock;
-    uint8_t \
-    _console_region: 2,
-                     _use_controller: 1,
-                     _btn_press: 1,
-                     _can_reconfigure: 1,
-                     _is_reconfigured: 1,
-                     _tap: 2;
+    uint8_t _console_region, _tap: 2;
+    bool _use_controller,
+         _btn_press,
+         _can_reconfigure,
+         _is_reconfigured;
 
   public:
 
@@ -182,7 +180,7 @@ class Console
     void restart();
     void save_region();
     void poll( const bool );
-    void reconfigure( const ERegion t_region );
+    void reconfigure( const ERegion t_region=load_region() );
     void handle( const uint32_t t_ticks );
 
     bool controller() {

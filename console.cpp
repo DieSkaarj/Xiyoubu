@@ -65,7 +65,7 @@ void CPU_Clk::reset( const double t_mhz )
 }
 
 Console::Console( const uint32_t t_ticks ):
-  _use_controller( false ),
+  _use_controller( load_controller_preference() ),
   _btn_press( false ),
   _can_reconfigure( false ),
   _is_reconfigured( false ),
@@ -82,10 +82,9 @@ Console::Console( const uint32_t t_ticks ):
   CPU = CPU_INIT;
   CPU_DDR =  CPU_CONF;
 
-  controller( load_controller_preference() );
-  reconfigure( load_region() );
-
   SerialSend( _clock );
+
+  reconfigure();
 }
 
 /*
@@ -126,7 +125,9 @@ void Console::on_startup( const uint32_t t_wait )
 {
   delay( t_wait );
 
-  check_controller_preference();
+  //reconfigure( load_region() );
+  controller( load_controller_preference() );
+//  check_controller_preference();
 
   tap_reset( millis() );
 }
@@ -174,11 +175,11 @@ void Console::reconfigure( const ERegion t_region )
   else
     _console_region = t_region;
 
-  halt( true );
+  _clock.halt( true );
   delay( CPU_HALT_TIME * .5 );
   set_sys_region( region() );
   set_led_color( led() );
-  halt( false );
+  _clock.halt( false );
 }
 
 /*

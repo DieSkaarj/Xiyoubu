@@ -61,7 +61,15 @@ void Controller::poll( const bool t_signal, const uint8_t t_buttons )
      if   ( SIGNAL == LOW  && START/C:pin1 == LOW ) then 'START' is expressed
      elif ( SIGNAL == HIGH && START/C:pin1 == LOW ) then 'C' is expressed
 
+     To accommodate for 6 Button pads just sample from the first change.
   */
+  static int sample{ 0 };
+
+  if( sample > 8 ) sample = 0;
+
+  ++sample;
+
+  if( sample > 1 ) return;
 
   _on_read &= t_signal == false ? \
               ( t_buttons | 0xfe ) << 8 :
@@ -82,7 +90,7 @@ void Controller::handle( const uint32_t t_ticks )
   const uint32_t debounce{ t_ticks - delta };
 
   if
-  ( last_read != status || debounce > BUTTON_HOLD)
+  ( status != last_read || debounce > BUTTON_HOLD )
     delta = t_ticks;
   else
     return;
@@ -99,6 +107,7 @@ void Controller::handle( const uint32_t t_ticks )
     case IN_GAME_RESET:     console->restart(); clear(); break;
     case SAVE_REGION:       console->save_region(); break;
     case CHECK_FREQUENCY:   console->check_frequency(); break;
+    default: delta = t_ticks; break;
   }
 
   last_read = status;

@@ -15,8 +15,8 @@ const double CPUClock::_step_l{ STEP_MA };
 
 const double base{ 2.5e+7 };
 
-CPUClock::CPUClock( const frequency_t t_q):
-  _frequency( t_q ),
+CPUClock::CPUClock( const frequency_t t_freq ):
+  _frequency( t_freq ),
   _step( 0.f )
 {
   SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );

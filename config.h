@@ -19,9 +19,6 @@ CNTRLR_LOC        { 2 },
 CONSOLE_IO        { 0x3d },
 CONSOLE_CFG       { 0x3 },
 
-CPU_IO            { 0xac },
-CPU_CFG           { 0xa4 },
-
 LED_IO            { 0xb },
 LED_CFG           { 0xb },
 

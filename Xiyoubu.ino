@@ -26,23 +26,19 @@
 #include "config.h"
 #include "console.h"
 #include "controller.h"
+#include "pins_xiyoubu.h"
 
 static const Console *mega_drive;
 static const Controller *pad;
 
 ISR( INT1_vect )
 {
-  const bool select{ ( PIND >> PD3 ) & 1 };
-  const uint8_t buttons{ PIND };
-
-  pad->poll( select, buttons );
+  pad->poll( D_SELECT,D_CONTROLLER );
 }
 
-ISR( PCINT1_vect )
+ISR( V_CONSOLE )
 {
-  const bool button{ ( PINC >> PC1 ) & 1 };
-
-  mega_drive->poll( button );
+  mega_drive->poll( D_BUTTON );
 }
 
 int main()
@@ -50,6 +46,9 @@ int main()
   init();
 
   noInterrupts();
+
+  EXT_PIN_INTERRUPTS( ENABLE_CONSOLE );
+  EXT_PIN_MASK_VECTS( V_BUTTON );
 
   mega_drive = new Console( millis() );
   pad = new Controller( mega_drive );

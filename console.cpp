@@ -1,33 +1,11 @@
 #include "console.h"
+#include "cpuclock.h"
 #include "config.h"
 
 #include "pins_arduino.h"
+#include "pins_xiyoubu.h"
 
-#define CONSOLE PORTC
-#define CONSOLE_DDR DDRC
-
-#define LED PORTA
-#define LED_DDR DDRA
-
-#define RESET PC0
-#define BUTTON PC1
-#define VIDEO PC2
-#define LANG PC3
-
-#define RGB_R PA3
-#define RGB_G PA0
-#define RGB_B PA1
-
-#define CONSOLE_CONF 0x3d
-#define CONSOLE_INIT 0x3
-
-#define CPU PORTB
-#define CPU_DDR DDRB
-#define CPU_INIT 0xa4
-#define CPU_CONF 0xac
-
-#define LED_CONF 0xb
-#define LED_INIT 0x8
+#include <avr/eeprom.h>
 
 /*
    Init. static variables.
@@ -35,6 +13,8 @@
 
 uint32_t Console::_chronos{ 0 },
          Console::_tap_timer{ 0 };
+CPUClock Console::_clock( MIN_MHZ );
+constexpr Console::Mode Console::mode[4];
 
 /*
 
@@ -42,47 +22,21 @@ uint32_t Console::_chronos{ 0 },
 
 */
 
-uint32_t CalculateFrequency( const double );
-void SerialWrite( uint16_t );
-void SerialSend( const double );
-
-CPU_Clk::CPU_Clk():
-  _min( MIN_MHZ ), _max( MAX_MHZ ),
-  _step_s( STEP_MI ),
-  _step_l( STEP_MA ),
-  _frequency( 7.5e+6 ),
-  _step( 0.f )
-{
-  /* Empty */
-}
-
-void CPU_Clk::reset( const double t_mhz )
-{
-  halt( true );
-  delay( CPU_HALT_TIME * .5 );
-  SerialSend( _frequency = t_mhz );
-  halt( false );
-}
-
 Console::Console( const uint32_t t_ticks ):
-  _use_controller( load_controller_preference() ),
-  _btn_press( false ),
+  _console_region( load_region() ),
+  _tap( 0 ),
+  _is_button_pressed( false ),
   _can_reconfigure( false ),
   _is_reconfigured( false ),
-  _tap( 0 ),
-  _console_region( load_region() )
+  _is_overclocked( false ),
+  _lock( true ),
+  is_controller_available( load_controller_preference() )
 {
-  PCICR = _BV( PCIE1 );
-  PCMSK1 = _BV( PCINT9 );
+  SETUP_LED( LED_IO,LED_CFG );
+  SETUP_CONSOLE( CONSOLE_IO,CONSOLE_CFG );
+  SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );
 
-  LED = LED_INIT;
-  LED_DDR = LED_CONF;
-  CONSOLE = CONSOLE_INIT;
-  CONSOLE_DDR = CONSOLE_CONF;
-  CPU = CPU_INIT;
-  CPU_DDR =  CPU_CONF;
-
-  SerialSend( _clock );
+  _clock.reset( _clock );
 }
 
 /*
@@ -91,15 +45,112 @@ Console::Console( const uint32_t t_ticks ):
 
 */
 
+static const ERegion Console::load_region() {
+  return static_cast< ERegion >( eeprom_read_byte( REGION_LOC ) );
+}
+
+void Console::clear_sys_port() {
+  P_CONSOLE &= ~SYSTEM_MASK;
+}
+
+void Console::clear_led_port() {
+  P_LED &= ~LED_MASK;
+}
+
+void Console::write_led_port( const uint8_t v ) {
+  P_LED |= v & LED_MASK;
+}
+
+void Console::write_sys_port( const uint8_t v ) {
+  P_CONSOLE |= v & SYSTEM_MASK;
+}
+
+void Console::set_sys_region( const ERegion region ) {
+  clear_sys_port();
+  write_sys_port( region << 4 | region << 2 );
+}
+
+void Console::set_led_color( const ELed color )      {
+  clear_led_port();
+  write_led_port( color );
+}
+
+const ELed Console::led() const {
+  return mode[ _console_region ].led;
+}
+
+bool Console::load_controller_preference() {
+  return eeprom_read_byte( CNTRLR_LOC );
+}
+
+void Console::flip_use_controller() {
+  is_controller_available = !is_controller_available;
+  noInterrupts();
+  eeprom_update_byte( CNTRLR_LOC, is_controller_available );
+  interrupts();
+  check_controller_preference();
+}
+
+void Console::default_tap() { /* Dummy Function */ }
+
+void Console::cycle_region_timeout( uint32_t t_ticks )
+{
+  static uint32_t timer{ 0 };
+
+  if
+  ( ( t_ticks - timer ) >= BUTTON_RESET_TIME )
+  {
+    if ( ( _is_reconfigured = _can_reconfigure ) )
+    {
+      reconfigure( _console_region + 1 );
+    }
+    else
+      _can_reconfigure = true;
+
+    timer = t_ticks;
+  }
+
+}
+
+void Console::cycle_region_reset( const uint32_t t_ticks )
+{
+  if ( _can_reconfigure ) 
+  {
+    if( _is_reconfigured )
+    {
+      _tap = _is_reconfigured = false;
+    }
+
+    _can_reconfigure = false;
+  }
+}
+
+void Console::led_info( ELed t_color1, ELed t_color2 = 0 ) {
+
+  t_color2 = t_color2 ? t_color2 : t_color1;
+
+  clear_led_port();
+  delay( 250 );
+  set_led_color( t_color1 );
+  delay( 150 );
+  clear_led_port();
+  delay( 150 );
+  set_led_color( t_color2 );
+  delay( 150 );
+  clear_led_port();
+  delay( 250 );
+  set_led_color( led() );
+}
+
 void Console::restart()
 {
   noInterrupts();
   {
 
     clear_led_port();
-    CONSOLE &= ~_BV( RESET );
+    P_CONSOLE &= ~_BV( P_RESET );
     delayMicroseconds( 168e+4 );
-    CONSOLE |= _BV( RESET ) | _BV( BUTTON );
+    P_CONSOLE |= _BV( P_RESET );
     delay( 16800 );
 
   }
@@ -126,8 +177,8 @@ void Console::on_startup( const uint32_t t_wait )
   delay( t_wait );
 
   reconfigure();
-  _lock = false;
   check_controller_preference();
+  _lock = false;
 }
 
 void Console::check_frequency()
@@ -150,8 +201,16 @@ void Console::poll( const bool t_button )
      on CHANGE
   */
 
-  if ( ( _btn_press = !t_button ) ) ++_tap;
-  else _chronos = millis();
+  if ( !t_button )
+  {
+    _is_button_pressed = true;
+  }
+  else
+  {
+    _is_button_pressed = false;
+    ++_tap;
+    _chronos = millis();
+  }
 }
 
 void Console::reconfigure( const ERegion t_region )
@@ -168,7 +227,7 @@ void Console::reconfigure( const ERegion t_region )
   ( t_region < JAP ) _console_region = USA;
   else
     _console_region = t_region;
-
+/*
   if( !_is_overclocked )
   {
     if( _console_region == USA || _console_region == JAP )
@@ -176,42 +235,33 @@ void Console::reconfigure( const ERegion t_region )
     else
       _clock.reset( PAL_MHZ );
   }
-
+*/
   set_sys_region( region() );
   set_led_color( led() );
 }
 
-/*
-
-   A complete and utter mess of flags. No human
-   must gaze upon this nonsense.
-
-*/
-
-int Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
+void Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
 {
   if
-  ( ( t_ticks - _chronos ) > BUTTON_TAPOUT )
+  ( ( t_ticks - _chronos ) >= BUTTON_TAPOUT )
   {
+    _tap = 0;
+    _chronos = t_ticks;
     ( this->*t_func )();
-    tap_reset( t_ticks );
-    return 0;
   }
-  else
-    return 1;
 }
 
 void Console::handle( const uint32_t t_ticks )
 {
   if ( _lock ) return;
 
-  if( _btn_press )
+  if( _is_button_pressed )
   {
     cycle_region_timeout( t_ticks );
   }
   else
   {
-    cycle_region_reset();
+    cycle_region_reset( t_ticks );
 
     switch
     ( _tap )
@@ -221,66 +271,32 @@ void Console::handle( const uint32_t t_ticks )
       case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); return;
     }
 
-    if ( _tap > TRIPLE_TAP ) tap_reset( t_ticks );
+    if ( _tap > TRIPLE_TAP ) tap_timeout( t_ticks, &default_tap );
   }
 }
 
-/*
+void Console::check_controller_preference() {
+  ELed color{ is_controller_available ? GREEN : RED };
 
-   Overclock stuff
-
-*/
-
-#define FSYNC PB2 // Can be moved to another pin
-#define SCLOCK PB5
-#define SDATA PB3
-#define SQUARE_WAVE 0x2028
-#define OSC_CTRL 0x2100  // SPI Mode 2
-#define PHASE_OFFSET 0xC000
-
-const double base{ 2.5e+7 };
-
-uint32_t CalculateFrequency( const double t_freq )
-{
-  const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / base ) )};
-  const uint32_t new_word{ ( ( hexval >> 14 ) & 0x3fff ) | 0x4000 };
-
-  return ( new_word << 16 ) | ( ( hexval & 0x3fff ) | 0x4000 );
+  clear_led_port();
+  delay( 250 );
+  set_led_color( CYAN );
+  delay( 250 );
+  set_led_color( color );
+  delay( 400 );
+  set_led_color( led() );
 }
 
-void SerialWrite( const uint16_t t_hlf_word )
-{
-  uint16_t data{ t_hlf_word };
-
-  for
-  ( auto i{ 0 }; i < 16; ++i )
-  {
-    PORTB = ( data & 0x8000 ) ?
-            PORTB | _BV( SDATA ) : PORTB & ~_BV( SDATA );
-    ;;
-    PORTB &= ~_BV( SCLOCK );
-    ;;
-    PORTB |= _BV( SCLOCK );
-    data <<= 1; // The half word is read a bit at a time from the top (msb)
-  }
-
-  PORTB &= ~_BV( SDATA ); // Reset AD9833 device (active low)
-  ;;
+const ERegion Console::region() const {
+  return mode[ _console_region ].region;
 }
 
-void SerialSend( const double t_freq )
-{
-  const uint32_t freq{ CalculateFrequency( t_freq ) };
-  const uint16_t lsb{ static_cast< uint16_t >( freq ) },
-        msb{ static_cast< uint16_t >( freq >> 16 ) };
+void Console::save_region() {
+  noInterrupts();
 
-  PORTB &= ~_BV( FSYNC );
-  ;;
-  SerialWrite( OSC_CTRL );
-  SerialWrite( lsb );
-  SerialWrite( msb );
-  SerialWrite( PHASE_OFFSET );
-  SerialWrite( SQUARE_WAVE );
-  ;;
-  PORTB |= _BV( FSYNC );
+  eeprom_update_byte( REGION_LOC, _console_region );
+
+  interrupts();
+
+  led_info( WHITE );
 }

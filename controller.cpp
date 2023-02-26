@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "pins_arduino.h"
+#include "pins_xiyoubu.h"
 
 #include "controller.h"
 #include "console.h"
@@ -31,8 +32,7 @@ Controller::Controller( const Console *&t_console ):
       Set Port D to input and clear pull-up resistors
   */
 
-  CONTROLLER = CONTROLLER_INIT;
-  CONTROLLER_DDR = CONTROLLER_CONF;
+  SETUP_CONTROLLER( CONTROLLER_IO,CONTROLLER_CFG );
 
   EICRA &= ~_BV( ISC11 );
   EICRA = _BV( ISC10 ) ;
@@ -82,7 +82,7 @@ void Controller::poll( const bool t_signal, const uint8_t t_buttons )
 
 void Controller::handle( const uint32_t t_ticks )
 {
-  if ( !console->controller() ) return;
+  if ( console->is_controller_available == false ) return;
 
   static uint16_t last_read{ 0 };
   static uint32_t delta{ BUTTON_HOLD };

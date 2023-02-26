@@ -14,7 +14,25 @@ constexpr byte_t \
 /**********************************/
 
 REGION_LOC        { 0 },
-CNTRLR_LOC        { 2 };
+CNTRLR_LOC        { 2 }, 
+
+CONSOLE_IO        { 0x3d },
+CONSOLE_CFG       { 0x3 },
+
+CPU_IO            { 0xac },
+CPU_CFG           { 0xa4 },
+
+LED_IO            { 0xb },
+LED_CFG           { 0xb },
+
+CLOCK_IO          { 0xac },
+CLOCK_CFG         { 0xa4 },
+
+CONTROLLER_IO     { 0x1 },
+CONTROLLER_CFG    { 0xfe },
+
+SYSTEM_MASK       { 0x3c },
+LED_MASK          { 0xf };
 
 /**********************************/
 

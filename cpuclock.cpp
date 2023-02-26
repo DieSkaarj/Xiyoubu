@@ -19,7 +19,7 @@ CPUClock::CPUClock( const frequency_t t_q):
   _frequency( t_q ),
   _step( 0.f )
 {
-  /* Empty */
+  SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );
 }
 
 const uint32_t CPUClock::calculate_frequency( const double t_freq )

@@ -13,7 +13,9 @@
 
 */
 #define EXT_PIN_INTERRUPTS( v ) ( PCICR  =  v )
-#define EXT_PIN_MASK_VECTS( v ) ( PCMSK1  =  v )
+#define EXT_PIN_MASK_VECTS( v ) ( PCMSK1 =  v )
+#define CONTROLLER_INTERRUPT( v ) ( EICRA = v )
+#define CONTROLLER_INTR_MASK( v ) ( EIMSK = v )
 
 /*
    LED pins
@@ -64,6 +66,9 @@
 #define D_SELECT static_cast< bool >( D_CONTROLLER & _BV( P_SELECT ) )
 
 #define V_SELECT INT1_vect
+
+#define SELECT_SIGNAL _BV( ISC10 )
+#define SELECT_SIGMSK _BV( INT1 )
 
 #define SETUP_CONTROLLER(ddr,prt) ( P_CONTROLLER = prt ); ( DDRD = ddr );
 

@@ -23,7 +23,7 @@ constexpr Console::Mode Console::mode[4];
 */
 
 Console::Console( const uint32_t t_ticks ):
-  _console_region( load_region() ),
+  _console_region( INV ),
   _tap( 0 ),
   _is_button_pressed( false ),
   _can_reconfigure( false ),
@@ -32,9 +32,11 @@ Console::Console( const uint32_t t_ticks ):
   _lock( true ),
   is_controller_available( load_controller_preference() )
 {
+  EXT_PIN_INTERRUPTS( ENABLE_CONSOLE );
+  EXT_PIN_MASK_VECTS( V_BUTTON );
+
   SETUP_LED( LED_IO,LED_CFG );
   SETUP_CONSOLE( CONSOLE_IO,CONSOLE_CFG );
-  SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );
 
   _clock.reset( _clock );
 }
@@ -146,7 +148,6 @@ void Console::restart()
 {
   noInterrupts();
   {
-
     clear_led_port();
     P_CONSOLE &= ~_BV( P_RESET );
     delayMicroseconds( 168e+4 );
@@ -174,9 +175,9 @@ void Console::overclock( const bool dir, const bool sz )
 
 void Console::on_startup( const uint32_t t_wait )
 {
+  reconfigure();
   delay( t_wait );
 
-  reconfigure();
   check_controller_preference();
   _lock = false;
 }

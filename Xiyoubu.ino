@@ -31,7 +31,7 @@
 static const Console *mega_drive;
 static const Controller *pad;
 
-ISR( INT1_vect )
+ISR( V_SELECT )
 {
   pad->poll( D_SELECT,D_CONTROLLER );
 }
@@ -46,9 +46,6 @@ int main()
   init();
 
   noInterrupts();
-
-  EXT_PIN_INTERRUPTS( ENABLE_CONSOLE );
-  EXT_PIN_MASK_VECTS( V_BUTTON );
 
   mega_drive = new Console( millis() );
   pad = new Controller( mega_drive );

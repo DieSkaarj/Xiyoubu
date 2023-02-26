@@ -34,9 +34,8 @@ Controller::Controller( const Console *&t_console ):
 
   SETUP_CONTROLLER( CONTROLLER_IO,CONTROLLER_CFG );
 
-  EICRA &= ~_BV( ISC11 );
-  EICRA = _BV( ISC10 ) ;
-  EIMSK = _BV( INT1 );
+  CONTROLLER_INTERRUPT( SELECT_SIGNAL );
+  CONTROLLER_INTR_MASK( SELECT_SIGMSK );
 }
 
 /*
@@ -65,10 +64,9 @@ void Controller::poll( const bool t_signal, const uint8_t t_buttons )
   */
   static int sample{ 0 };
 
-  if( sample > 8 ) sample = 0;
-
   ++sample;
 
+  if( sample > 8 ) sample = 0;
   if( sample > 1 ) return;
 
   _on_read &= t_signal == false ? \

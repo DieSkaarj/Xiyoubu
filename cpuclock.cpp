@@ -14,7 +14,7 @@ const frequency_t CPUClock::_step_l{ STEP_MA };
 
 const double base{ 2.5e+7 };
 
-CPUClock::CPUClock( const frequency_t t_q):
+CPUClock::CPUClock( const frequency_t t_q ):
   _frequency( t_q ),
   _step( 0.f )
 {
@@ -23,7 +23,7 @@ CPUClock::CPUClock( const frequency_t t_q):
 
 const uint32_t CPUClock::calculate_frequency( const frequency_t t_freq )
 {
-  const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / base ) )};
+  const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / base ) ) };
   const uint32_t new_word{ ( ( hexval >> 14 ) & 0x3fff ) | 0x4000 };
 
   return ( new_word << 16 ) | ( ( hexval & 0x3fff ) | 0x4000 );

@@ -64,11 +64,11 @@ void Controller::poll( const bool t_signal, const port_t t_buttons )
   if( sample > 8 ) sample = 0;
   if( sample > 1 ) return;
 
-  _on_read &= t_signal == false ? \
+  _on_read &= false == t_signal ? \
               ( t_buttons | 0xfe ) << 8 :
               ( t_buttons | 0xfe );
 
-  _on_read |= t_signal == true ? \
+  _on_read |= true  == t_signal? \
               ( t_buttons ^ 0xfe ) << 8 :
               ( t_buttons ^ 0xfe );
 }

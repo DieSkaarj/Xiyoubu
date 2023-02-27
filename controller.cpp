@@ -75,7 +75,7 @@ void Controller::poll( const bool t_signal, const port_t t_buttons )
 
 void Controller::handle( const milliseconds_t t_ticks )
 {
-  if ( console->is_controller_available == false ) return;
+  if ( false == console->is_controller_available ) return;
 
   static pad_combo_t last_read{ PAD_CLEAR };
   static milliseconds_t delta{ BUTTON_TAPOUT };

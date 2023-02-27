@@ -6,14 +6,6 @@
 #include "console.h"
 #include "config.h"
 
-#define CONTROLLER PORTD
-#define CONTROLLER_READ PIND
-#define CONTROLLER_DDR DDRD
-#define CONTROLLER_CONF 0x1
-#define CONTROLLER_INIT 0xfe
-#define SELECT PD3
-#define BUTTON_HOLD 1300U
-
 /*
 
    CTORS

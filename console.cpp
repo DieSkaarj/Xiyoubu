@@ -100,7 +100,7 @@ void Console::default_tap() { /* Dummy Function */ }
 
 void Console::cycle_region_timeout( const milliseconds_t t_ticks )
 {
-  static uint32_t timer{ 0 };
+  static milliseconds_t timer{ 0 };
 
   if
   ( ( t_ticks - timer ) >= BUTTON_RESET_TIME )

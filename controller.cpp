@@ -85,10 +85,10 @@ void Controller::handle( const milliseconds_t t_ticks )
 {
   if ( console->is_controller_available == false ) return;
 
-  static uint16_t last_read{ 0 };
-  static uint32_t delta{ BUTTON_HOLD };
-  const uint16_t  status{ ( _on_read & PAD_MASK ) };
-  const uint32_t debounce{ t_ticks - delta };
+  static pad_combo_t last_read{ 0 };
+  static milliseconds_t delta{ BUTTON_HOLD };
+  const pad_combo_t  status{ ( _on_read & PAD_MASK ) };
+  const milliseconds_t debounce{ t_ticks - delta };
 
   if
   ( status != last_read || debounce > BUTTON_HOLD )

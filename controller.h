@@ -15,7 +15,7 @@ struct Controller
   public:
 
     void poll( const bool, const uint8_t );
-    void handle( const uint32_t );
+    void handle( const milliseconds_t );
 
     Controller( const Console *& );
 };

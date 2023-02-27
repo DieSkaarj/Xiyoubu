@@ -42,10 +42,10 @@ class Console
     bool load_controller_preference();
 
     void default_tap();
-    void tap_timeout( uint32_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
+    void tap_timeout( const milliseconds_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
 
-    void cycle_region_timeout( uint32_t /* Ticks */ );
-    void cycle_region_reset( uint32_t /* Ticks */ );
+    void cycle_region_timeout( const milliseconds_t /* Ticks */ );
+    void cycle_region_reset( const milliseconds_t /* Ticks */ );
 
     const ELed led() const;
     void led_info( ELed t_color1, ELed t_color2 = 0 );
@@ -64,19 +64,19 @@ class Console
 
     bool is_controller_available;
 
-    void on_startup( const uint32_t /* Ticks */ );
+    void on_startup( const milliseconds_t /* Ticks */ );
     void overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
     void check_frequency();
     void restart();
     void save_region();
     void poll( const bool /* RESET Button */ );
     void reconfigure( const ERegion t_region=load_region() );
-    void handle( const uint32_t t_ticks );
+    void handle( const milliseconds_t t_ticks );
 
     void check_controller_preference();
     const ERegion region() const;
 
-    Console( const uint32_t );
+    Console( const milliseconds_t );
 };
 
 #endif//_CONSOLE_H

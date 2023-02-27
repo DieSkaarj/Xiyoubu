@@ -25,7 +25,7 @@ CPUClock::CPUClock( const frequency_t t_q):
   SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );
 }
 
-const uint32_t CPUClock::calculate_frequency( const double t_freq )
+const uint32_t CPUClock::calculate_frequency( const frequency_t t_freq )
 {
   const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / base ) )};
   const uint32_t new_word{ ( ( hexval >> 14 ) & 0x3fff ) | 0x4000 };
@@ -33,7 +33,7 @@ const uint32_t CPUClock::calculate_frequency( const double t_freq )
   return ( new_word << 16 ) | ( ( hexval & 0x3fff ) | 0x4000 );
 }
 
-void CPUClock::write_ad9833( const uint16_t t_hlf_word )
+void CPUClock::write_ad9833( const word_t t_hlf_word )
 {
   uint16_t data{ t_hlf_word };
 
@@ -53,7 +53,7 @@ void CPUClock::write_ad9833( const uint16_t t_hlf_word )
   ;;
 }
 
-void CPUClock::send_ad9833( const double t_freq )
+void CPUClock::send_ad9833( const frequency_t t_freq )
 {
   const uint32_t freq{ calculate_frequency( t_freq ) };
   const uint16_t lsb{ static_cast< uint16_t >( freq ) },
@@ -78,7 +78,7 @@ void CPUClock::step( const bool t_size ) {
   _step = t_size ? _step_l : _step_s;
 }
 
-void CPUClock::reset( const double t_mhz ) {
+void CPUClock::reset( const frequency_t t_mhz ) {
   noInterrupts();
   halt( true );
   delay( CPU_HALT_TIME * .5 );

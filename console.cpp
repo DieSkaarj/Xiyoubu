@@ -25,7 +25,7 @@ constexpr Console::Mode Console::mode[4];
 
 */
 
-Console::Console( const uint32_t t_ticks ):
+Console::Console( const milliseconds_t t_ticks ):
   _console_region( INV ),
   _tap( 0 ),
   _is_button_pressed( false ),
@@ -98,7 +98,7 @@ void Console::flip_use_controller() {
 
 void Console::default_tap() { /* Dummy Function */ }
 
-void Console::cycle_region_timeout( uint32_t t_ticks )
+void Console::cycle_region_timeout( const milliseconds_t t_ticks )
 {
   static uint32_t timer{ 0 };
 
@@ -117,7 +117,7 @@ void Console::cycle_region_timeout( uint32_t t_ticks )
 
 }
 
-void Console::cycle_region_reset( const uint32_t t_ticks )
+void Console::cycle_region_reset( const milliseconds_t t_ticks )
 {
   if ( _can_reconfigure ) 
   {
@@ -176,7 +176,7 @@ void Console::overclock( const bool dir, const bool sz )
   _clock.reset( _clock );
 }
 
-void Console::on_startup( const uint32_t t_wait )
+void Console::on_startup( const milliseconds_t t_wait )
 {
   reconfigure();
   delay( t_wait );
@@ -244,7 +244,7 @@ void Console::reconfigure( const ERegion t_region )
   set_led_color( led() );
 }
 
-void Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
+void Console::tap_timeout( const milliseconds_t t_ticks, void( Console::*t_func)() )
 {
   if
   ( ( t_ticks - _chronos ) >= BUTTON_TAPOUT )
@@ -255,7 +255,7 @@ void Console::tap_timeout( uint32_t t_ticks, void( Console::*t_func)() )
   }
 }
 
-void Console::handle( const uint32_t t_ticks )
+void Console::handle( const milliseconds_t t_ticks )
 {
   if ( _lock ) return;
 

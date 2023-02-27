@@ -81,7 +81,7 @@ void Controller::poll( const bool t_signal, const uint8_t t_buttons )
               ( t_buttons ^ 0xfe );
 }
 
-void Controller::handle( const uint32_t t_ticks )
+void Controller::handle( const milliseconds_t t_ticks )
 {
   if ( console->is_controller_available == false ) return;
 

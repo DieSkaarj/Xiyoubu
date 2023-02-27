@@ -58,7 +58,7 @@ int main()
 
   while ( true )
   {
-    const uint32_t tocks{ millis() };
+    const milliseconds_t tocks{ millis() };
 
     mega_drive->handle( tocks );
     pad->handle( tocks );

@@ -11,7 +11,7 @@ constexpr ELed \
 /*
     Available colours:
 
-    LED_OFF,
+    BLACK, (Off)
     RED, YELLOW,
     GREEN, CYAN,
     BLUE, MAGENTA,
@@ -184,7 +184,7 @@ constexpr word_t \
 /*
    When the select signal from the controller is high
    the read out from the pins are shifted left by 8
-   and store in the controller read variable.
+   and stored in the controller read variable.
 
 */
 PAD_MASK          { 0b1111011000000110 }, \

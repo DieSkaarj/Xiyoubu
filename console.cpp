@@ -156,7 +156,6 @@ void Console::restart()
     delayMicroseconds( 168e+4 );
     P_CONSOLE |= _BV( P_RESET );
     delay( 16800 );
-
   }
   interrupts();
 
@@ -273,9 +272,8 @@ void Console::handle( const milliseconds_t t_ticks )
       case SINGLE_TAP: tap_timeout( t_ticks, &restart ); return;
       case DOUBLE_TAP: tap_timeout( t_ticks, &save_region ); return;
       case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); return;
+      default: tap_timeout( t_ticks, &default_tap ); return;
     }
-
-    if ( _tap > TRIPLE_TAP ) tap_timeout( t_ticks, &default_tap );
   }
 }
 

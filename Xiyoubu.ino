@@ -64,5 +64,5 @@ int main()
     pad->handle( tocks );
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

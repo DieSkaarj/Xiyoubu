@@ -11,6 +11,9 @@
    Init. static variables.
 */
 
+using namespace SETUP;
+using namespace ADVANCED_SETUP;
+
 uint32_t Console::_chronos{ 0 },
          Console::_tap_timer{ 0 };
 CPUClock Console::_clock( MIN_MHZ );

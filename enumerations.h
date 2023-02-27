@@ -25,7 +25,7 @@ enum ELed : uint8_t
      PORTA PIN:
      RGB R=0b1000, G=0b0001, B=0b0010
   */
-  LED_OFF = 0b0000,
+  BLACK = 0b0000,
   GREEN = 0b0001,
   BLUE = 0b0010,
   CYAN = 0b0011,

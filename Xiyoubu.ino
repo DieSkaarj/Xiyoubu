@@ -28,6 +28,8 @@
 #include "controller.h"
 #include "pins_xiyoubu.h"
 
+using namespace SETUP;
+
 static const Console *mega_drive;
 static const Controller *pad;
 

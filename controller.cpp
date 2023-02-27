@@ -25,6 +25,9 @@
 #define MAJOR true
 #define MINOR false
 
+using namespace SETUP;
+using namespace ADVANCED_SETUP;
+
 Controller::Controller( const Console *&t_console ):
   console( t_console )
 {
@@ -46,7 +49,7 @@ Controller::Controller( const Console *&t_console ):
 
 void Controller::clear()
 {
-  _on_read = 0xffffffff;
+  _on_read = PAD_CLEAR;
 }
 
 void Controller::poll( const bool t_signal, const uint8_t t_buttons )

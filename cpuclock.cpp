@@ -4,6 +4,9 @@
 #include "pins_xiyoubu.h"
 #include "cpuclock.h"
 
+using namespace SETUP;
+using namespace ADVANCED_SETUP;
+
 #define SQUARE_WAVE 0x2028
 #define OSC_CTRL 0x2100  // SPI Mode 2
 #define PHASE_OFFSET 0xC000
@@ -15,8 +18,8 @@ const double CPUClock::_step_l{ STEP_MA };
 
 const double base{ 2.5e+7 };
 
-CPUClock::CPUClock( const frequency_t t_freq ):
-  _frequency( t_freq ),
+CPUClock::CPUClock( const frequency_t t_q):
+  _frequency( t_q ),
   _step( 0.f )
 {
   SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );

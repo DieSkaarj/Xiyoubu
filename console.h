@@ -20,10 +20,10 @@ class Console
 
     */
     static constexpr Mode mode[4] {
-      { LED_OFF, INV },
-      { LED_JAP, JAP },
-      { LED_EUR, EUR },
-      { LED_USA, USA }
+      { SETUP::LED_OFF, INV },
+      { SETUP::LED_JAP, JAP },
+      { SETUP::LED_EUR, EUR },
+      { SETUP::LED_USA, USA }
     };
 
     static const ERegion load_region();
@@ -42,7 +42,7 @@ class Console
     bool load_controller_preference();
 
     void default_tap();
-    void tap_timeout( uint32_t /* Ticks */, void(Console::*)() /*Void() Member Function Pointer*/ );
+    void tap_timeout( uint32_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
 
     void cycle_region_timeout( uint32_t /* Ticks */ );
     void cycle_region_reset( uint32_t /* Ticks */ );

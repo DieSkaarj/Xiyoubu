@@ -130,15 +130,22 @@ constexpr byte_t \
 /**********************************/
 
 REGION_LOC        { 0 }, \
-CNTRLR_LOC        { 1 }, \
+CNTRLR_LOC        { 1 };
+
+/**********************************/
 
 /******************************/
 /*  Device Pin Configurations */
 /******************************/
+constexpr port_t \
 /*
    Expressed as bits to reflect pins on the device
-   and any changes made here should be noted in 
+   and any changes made here should be noted in
    pins_xiyoubu.h.
+
+   Details of the MH-ATtiny88 pins and ports can be found at the following website:
+
+   http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-9157-automotive-microcontrollers-attiny88_datasheet.pdf
 */
 /************************************************/
 /* Data Direction Register Configuration (@_IO) */
@@ -150,10 +157,15 @@ CNTRLR_LOC        { 1 }, \
    DDRD - CONTROLLER
 
 */
+/************************************************/
+
 LED_IO            { 0b00001011 }, \
 CLOCK_IO          { 0b10101100 }, \
 CONSOLE_IO        { 0b00111101 }, \
 CONTROLLER_IO     { 0b00000001 }, \
+
+/************************************************/
+
 /**************************************************/
 /*  Port Pull-Up Resistors Configuration (@_CFG)  */
 /**************************************************/
@@ -164,10 +176,15 @@ CONTROLLER_IO     { 0b00000001 }, \
    PORTD - CONTROLLER
 
 */
+/**************************************************/
+
 LED_CFG           { 0b00001011 }, \
 CLOCK_CFG         { 0b10100100 }, \
 CONSOLE_CFG       { 0b00000011 }, \
 CONTROLLER_CFG    { 0b11111110 }, \
+
+/**************************************************/
+
 /****************/
 /*  Read Masks  */
 /****************/
@@ -176,6 +193,8 @@ CONTROLLER_CFG    { 0b11111110 }, \
    PINC - CONSOLE
    PIND - CONTROLLER
 */
+/****************/
+
 LED_MASK          { 0b00001011 }, \
 SYSTEM_MASK       { 0b00111100 }, \
 SIG_MASK          { 0b00001000 };
@@ -188,7 +207,27 @@ constexpr word_t \
 
 */
 PAD_MASK          { 0b1111011000000110 }, \
-PAD_CLEAR         { 0b1111111111111111 };
+PAD_CLEAR         { 0b1111111111111111 }, \
+
+/****************/
+
+/**************************************/
+/*  Oscillator (AD9833) Instructions  */
+/**************************************/
+/*
+  These are AD9833 specific codes, more details can be found at the follow websites:
+
+  https://www.analog.com/media/en/technical-documentation/data-sheets/ad9833.pdf
+  https://www.analog.com/media/en/technical-documentation/application-notes/AN-1070.pdf
+
+*/
+/**************************************/
+
+SQUARE_WAVE       { 0x2028 }, \
+OSC_CTRL          { 0x2100 }, \
+PHASE_OFFSET      { 0xC000 };
+
+/**************************************/
 
 };
 #endif//_XIYOUBU_CONFIG_H

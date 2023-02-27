@@ -52,7 +52,7 @@ void Controller::clear()
   _on_read = PAD_CLEAR;
 }
 
-void Controller::poll( const bool t_signal, const uint8_t t_buttons )
+void Controller::poll( const bool t_signal, const port_t t_buttons )
 {
   /*
      The idea here is just to copy the port register into the _on_read variable.

@@ -7,14 +7,10 @@
 using namespace SETUP;
 using namespace ADVANCED_SETUP;
 
-#define SQUARE_WAVE 0x2028
-#define OSC_CTRL 0x2100  // SPI Mode 2
-#define PHASE_OFFSET 0xC000
-
-const double CPUClock::_min{ MIN_MHZ };
-const double CPUClock::_max{ MAX_MHZ };
-const double CPUClock::_step_s{ STEP_MI };
-const double CPUClock::_step_l{ STEP_MA };
+const frequency_t CPUClock::_min{ MIN_MHZ };
+const frequency_t CPUClock::_max{ MAX_MHZ };
+const frequency_t CPUClock::_step_s{ STEP_MI };
+const frequency_t CPUClock::_step_l{ STEP_MA };
 
 const double base{ 2.5e+7 };
 

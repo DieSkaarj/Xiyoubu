@@ -3,8 +3,8 @@
 
 class CPUClock
 {
-  static const double _min, _max, _step_s, _step_l;
-  double _frequency, _step;
+  static const frequency_t _min, _max, _step_s, _step_l;
+  frequency_t _frequency, _step;
 
   const uint32_t calculate_frequency( const frequency_t );
   void write_ad9833( const word_t );

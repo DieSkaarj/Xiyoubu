@@ -12,7 +12,6 @@ class CPUClock
 
   public:
 
-    void set( const double );
     void halt( const bool );
     void step( const bool );
     void reset( const double );

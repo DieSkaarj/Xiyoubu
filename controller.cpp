@@ -77,13 +77,13 @@ void Controller::handle( const milliseconds_t t_ticks )
 {
   if ( console->is_controller_available == false ) return;
 
-  static pad_combo_t last_read{ 0 };
-  static milliseconds_t delta{ BUTTON_HOLD };
+  static pad_combo_t last_read{ PAD_CLEAR };
+  static milliseconds_t delta{ BUTTON_TAPOUT };
   const pad_combo_t  status{ ( _on_read & PAD_MASK ) };
   const milliseconds_t debounce{ t_ticks - delta };
 
   if
-  ( status != last_read || debounce > BUTTON_HOLD )
+  ( status != last_read || debounce > BUTTON_TAPOUT )
     delta = t_ticks;
   else
     return;

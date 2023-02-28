@@ -7,7 +7,7 @@ class Console;
 
 struct Controller
 {
-    volatile pad_combo_t  _on_read{ ADVANCED_SETUP::PAD_CLEAR };
+    volatile word_t       _on_read{ ADVANCED_SETUP::PAD_CLEAR };
     const Console         *&console;
 
     void clear();

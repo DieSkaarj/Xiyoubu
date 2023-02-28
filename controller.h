@@ -7,7 +7,7 @@ class Console;
 
 struct Controller
 {
-    volatile uint16_t     _on_read{ ADVANCED_SETUP::PAD_CLEAR };
+    volatile pad_combo_t  _on_read{ ADVANCED_SETUP::PAD_CLEAR };
     const Console         *&console;
 
     void clear();

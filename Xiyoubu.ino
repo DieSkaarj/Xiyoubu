@@ -52,9 +52,9 @@ int main()
   mega_drive = new Console( millis() );
   pad = new Controller( mega_drive );
 
-  interrupts();
-
   mega_drive->on_startup( STARTUP_TIME );
+
+  interrupts();
 
   while ( true )
   {

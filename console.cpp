@@ -41,6 +41,7 @@ Console::Console( const milliseconds_t t_ticks ):
   SETUP_LED( LED_IO,LED_CFG );
   SETUP_CONSOLE( CONSOLE_IO,CONSOLE_CFG );
 
+  reconfigure( load_region() );
   _clock.reset( _clock );
 }
 
@@ -123,7 +124,9 @@ void Console::cycle_region_reset( const milliseconds_t t_ticks )
   {
     if( _is_reconfigured )
     {
-      _tap = _is_reconfigured = false;
+      noInterrupts();
+      _tap = 0; _is_reconfigured = false;
+      interrupts();
     }
 
     _can_reconfigure = false;
@@ -177,7 +180,6 @@ void Console::overclock( const bool dir, const bool sz )
 
 void Console::on_startup( const milliseconds_t t_wait )
 {
-  reconfigure();
   delay( t_wait );
 
   check_controller_preference();
@@ -248,9 +250,10 @@ void Console::tap_timeout( const milliseconds_t t_ticks, void( Console::*t_func)
   if
   ( ( t_ticks - _chronos ) >= BUTTON_TAPOUT )
   {
+    noInterrupts();
     _tap = 0;
-    _chronos = t_ticks;
     ( this->*t_func )();
+    interrupts();
   }
 }
 

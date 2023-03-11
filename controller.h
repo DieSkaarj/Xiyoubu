@@ -11,6 +11,7 @@ struct Controller
     const Console         *&console;
 
     void clear();
+    bool sample();
 
   public:
 

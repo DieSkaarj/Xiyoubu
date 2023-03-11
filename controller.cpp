@@ -44,6 +44,18 @@ void Controller::clear()
   _on_read = PAD_CLEAR;
 }
 
+bool Controller::sample()
+{
+  static int sample{ 0 };
+
+  ++sample;
+
+  if( sample > 8 ) sample = 0;
+  if( sample > 1 ) return 1;
+
+  return 0;
+}
+
 void Controller::poll( const bool t_signal, const port_t t_buttons )
 {
   /*
@@ -57,12 +69,8 @@ void Controller::poll( const bool t_signal, const port_t t_buttons )
 
      To accommodate for 6 Button pads just sample from the first change.
   */
-  static int sample{ 0 };
 
-  ++sample;
-
-  if( sample > 8 ) sample = 0;
-  if( sample > 1 ) return;
+  if( sample() ) return;
 
   _on_read &= false == t_signal ? \
               ( t_buttons | 0xfe ) << 8 :

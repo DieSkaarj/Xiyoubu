@@ -51,9 +51,9 @@ bool Controller::sample()
   ++sample;
 
   if( sample > 8 ) sample = 0;
-  if( sample > 1 ) return 1;
+  if( sample > 1 ) return true;
 
-  return 0;
+  return false;
 }
 
 void Controller::poll( const bool t_signal, const port_t t_buttons )

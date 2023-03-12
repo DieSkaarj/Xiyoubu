@@ -12,8 +12,6 @@ const frequency_t CPUClock::_max{ MAX_MHZ };
 const frequency_t CPUClock::_step_s{ STEP_MI };
 const frequency_t CPUClock::_step_l{ STEP_MA };
 
-const double base{ 2.5e+7 };
-
 CPUClock::CPUClock( const frequency_t t_q ):
   _frequency( t_q ),
   _step( 0.f )
@@ -21,10 +19,10 @@ CPUClock::CPUClock( const frequency_t t_q ):
   SETUP_CLOCK( CLOCK_IO,CLOCK_CFG );
 }
 
-const big_word_t CPUClock::calculate_frequency( const frequency_t t_freq )
+const uint32_t CPUClock::calculate_frequency( const frequency_t t_freq )
 {
-  const big_word_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / base ) ) };
-  const big_word_t new_word{ ( ( hexval >> 14 ) & 0x3fff ) | 0x4000 };
+  const uint32_t hexval{ static_cast< uint32_t >( ( t_freq * pow( 2, 28 ) / BASE_FREQ ) ) };
+  const uint32_t new_word{ ( ( hexval >> 14 ) & 0x3fff ) | 0x4000 };
 
   return ( new_word << 16 ) | ( ( hexval & 0x3fff ) | 0x4000 );
 }
@@ -51,9 +49,9 @@ void CPUClock::write_ad9833( const word_t t_hlf_word )
 
 void CPUClock::send_ad9833( const frequency_t t_freq )
 {
-  const big_word_t freq{ calculate_frequency( t_freq ) };
-  const word_t lsb{ static_cast< word_t >( freq ) },
-        msb{ static_cast< word_t >( freq >> 16 ) };
+  const uint32_t freq{ calculate_frequency( t_freq ) };
+  const uint16_t lsb{ static_cast< uint16_t >( freq ) },
+        msb{ static_cast< uint16_t >( freq >> 16 ) };
 
   P_CLOCK &= ~_BV( P_FSYNC );
   ;;

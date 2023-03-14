@@ -40,9 +40,6 @@ ISR( V_SELECT )
 
 ISR( V_CONSOLE )
 {
-  if( D_BUTTON ) PORTD |= 1;
-  else PORTD &= ~1;
-  
   Console::poll( MEGA_DRIVE,D_BUTTON );
 }
 

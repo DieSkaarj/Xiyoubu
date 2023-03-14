@@ -30,17 +30,20 @@
 
 using namespace SETUP;
 
-static const Console *mega_drive;
-static const Controller *pad;
+static const Console *MEGA_DRIVE;
+static const Controller *PAD;
 
 ISR( V_SELECT )
 {
-  pad->poll( D_SELECT,D_CONTROLLER );
+  Controller::poll( PAD,D_SELECT,D_CONTROLLER );
 }
 
 ISR( V_CONSOLE )
 {
-  mega_drive->poll( D_BUTTON );
+  if( D_BUTTON ) PORTD |= 1;
+  else PORTD &= ~1;
+  
+  Console::poll( MEGA_DRIVE,D_BUTTON );
 }
 
 int main()
@@ -49,10 +52,10 @@ int main()
 
   noInterrupts();
 
-  mega_drive = new Console( millis() );
-  pad = new Controller( mega_drive );
+  MEGA_DRIVE = new Console( millis() );
+  PAD = new Controller( MEGA_DRIVE );
 
-  mega_drive->on_startup( STARTUP_TIME );
+  MEGA_DRIVE->on_startup( STARTUP_TIME );
 
   interrupts();
 
@@ -60,8 +63,8 @@ int main()
   {
     const milliseconds_t tocks{ millis() };
 
-    mega_drive->handle( tocks );
-    pad->handle( tocks );
+    MEGA_DRIVE->handle( tocks );
+    PAD->handle( tocks );
   }
 
   return EXIT_SUCCESS;

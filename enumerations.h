@@ -8,17 +8,21 @@ enum ETap
   NOT_TAPPED = 0,
   SINGLE_TAP = 1,
   DOUBLE_TAP = 2,
-  TRIPLE_TAP = 3
+  TRIPLE_TAP = 3,
+  RECONFIGURE = 4,
+  RESET_TAP = 5
 };
+
 
 enum ERegion : uint8_t { INV = 0x0, JAP = 0b01, EUR = 0b10, USA = 0b11 };
-inline ERegion operator++( const ERegion v ) {
+/*
+inline const ERegion operator++( ERegion v ) {
   return ( ++v ) > USA ? JAP : v;
 };
-inline ERegion operator--( const ERegion v ) {
+inline const ERegion operator--( ERegion v ) {
   return ( --v ) < JAP ? USA : v;
 };
-
+*/
 enum ELed : uint8_t
 {
   /*

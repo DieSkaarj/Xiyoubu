@@ -7,15 +7,15 @@ class Console;
 
 struct Controller
 {
-    volatile word_t       _on_read{ ADVANCED_SETUP::PAD_CLEAR };
-    const Console         *&console;
+    static volatile word_t  _on_read;
+    const Console           *&console;
 
     void clear();
     bool sample();
 
   public:
 
-    void poll( const bool, const port_t );
+    static void poll( const Controller*&,const bool, const port_t );
     void handle( const milliseconds_t );
 
     Controller( const Console *& );

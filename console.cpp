@@ -14,9 +14,14 @@
 using namespace SETUP;
 using namespace ADVANCED_SETUP;
 
-uint32_t Console::_chronos{ 0 },
-         Console::_tap_timer{ 0 };
-CPUClock Console::_clock( MIN_MHZ );
+milliseconds_t \
+Console::_chronos{ 0 },
+        Console::_tap_timer{ 0 },
+        Console::_cycle_timer{ 0 };
+
+CPUClock \
+Console::_clock( MIN_MHZ );
+
 constexpr Console::Mode Console::mode[4];
 
 /*
@@ -38,8 +43,8 @@ Console::Console( const milliseconds_t t_ticks ):
   EXT_PIN_INTERRUPTS( ENABLE_CONSOLE );
   EXT_PIN_MASK_VECTS( V_BUTTON );
 
-  SETUP_LED( LED_IO,LED_CFG );
-  SETUP_CONSOLE( CONSOLE_IO,CONSOLE_CFG );
+  SETUP_LED( LED_IO, LED_CFG );
+  SETUP_CONSOLE( CONSOLE_IO, CONSOLE_CFG );
 
   reconfigure( load_region() );
   _clock.reset( _clock );
@@ -90,47 +95,33 @@ bool Console::load_controller_preference() {
 }
 
 void Console::flip_use_controller() {
-  is_controller_available = !is_controller_available;
-  noInterrupts();
-  eeprom_update_byte( CNTRLR_LOC, is_controller_available );
-  interrupts();
-  check_controller_preference();
+
+  eeprom_update_byte( CNTRLR_LOC, is_controller_available = !is_controller_available );
 }
 
-void Console::default_tap() { /* Dummy Function */ }
+void Console::default_tap() { /* Empty */ }
 
 void Console::cycle_region_timeout( const milliseconds_t t_ticks )
 {
-  static milliseconds_t timer{ 0 };
-
   if
-  ( ( t_ticks - timer ) >= BUTTON_RESET_TIME )
+  ( ( t_ticks - _cycle_timer ) >= BUTTON_RESET_TIME )
   {
     if ( ( _is_reconfigured = _can_reconfigure ) )
     {
-      reconfigure( _console_region + 1 );
+      reconfigure( region() + 1 );
+      tap( RECONFIGURE );
     }
     else
       _can_reconfigure = true;
 
-    timer = t_ticks;
+    _cycle_timer = t_ticks;
   }
 
 }
 
-void Console::cycle_region_reset( const milliseconds_t t_ticks )
+void Console::cycle_region_reset()
 {
-  if ( _can_reconfigure ) 
-  {
-    if( _is_reconfigured )
-    {
-      noInterrupts();
-      _tap = 0; _is_reconfigured = false;
-      interrupts();
-    }
-
-    _can_reconfigure = false;
-  }
+  tap( static_cast< ETap >( _is_reconfigured = false ) );
 }
 
 void Console::led_info( ELed t_color1, ELed t_color2 = 0 ) {
@@ -152,22 +143,15 @@ void Console::led_info( ELed t_color1, ELed t_color2 = 0 ) {
 
 void Console::restart()
 {
-  noInterrupts();
-  {
-    clear_led_port();
-    P_CONSOLE &= ~_BV( P_RESET );
-    delayMicroseconds( 168e+4 );
-    P_CONSOLE |= _BV( P_RESET );
-    delay( 16800 );
-  }
-  interrupts();
-
-  set_led_color( led() );
+  clear_led_port();
+  P_CONSOLE &= ~_BV( P_RESET );
+  delayMicroseconds( 168e+4 );
+  P_CONSOLE |= _BV( P_RESET );
 }
 
 void Console::overclock( const bool dir, const bool sz )
 {
-  if( !_is_overclocked ) _is_overclocked = true;
+  if ( !_is_overclocked ) _is_overclocked = true;
 
   _clock.step( sz );
 
@@ -200,21 +184,38 @@ void Console::check_frequency()
   led_info( color );
 }
 
-void Console::poll( const bool t_button )
+void Console::reset_button( const bool t_val )
+{
+  if
+  ( !( _is_button_pressed = t_val ) )
+  {
+    _chronos = millis();
+  }
+}
+
+ETap Console::tap( const ETap t_tap )
+{
+  _tap = t_tap;
+}
+
+void Console::poll( const Console*& t_console, const bool t_button )
 {
   /*
      on CHANGE
   */
 
-  if ( !t_button )
+  auto &sega{ t_console };
+  auto tap{ sega->tap() };
+
+  if
+  ( !t_button )
   {
-    _is_button_pressed = true;
+    sega->reset_button( true );
   }
   else
   {
-    _is_button_pressed = false;
-    ++_tap;
-    _chronos = millis();
+    sega->reset_button( false );
+    sega->tap( static_cast< int >( 1 + tap ) );
   }
 }
 
@@ -232,50 +233,68 @@ void Console::reconfigure( const ERegion t_region )
   ( t_region < JAP ) _console_region = USA;
   else
     _console_region = t_region;
-/*
-  if( !_is_overclocked )
-  {
-    if( _console_region == USA || _console_region == JAP )
-      _clock.reset( NTSC_MHZ );
-    else
-      _clock.reset( PAL_MHZ );
-  }
-*/
+
+  /*
+      I'd love to keep this in however it seems
+      to produce a sync error between this and the Z80
+      so for the moment it remains as an idea only
+  */
+  /*
+    if( !_is_overclocked )
+    {
+      if( _console_region == USA || _console_region == JAP )
+        _clock.reset( NTSC_MHZ );
+      else
+        _clock.reset( PAL_MHZ );
+    }
+  */
   set_sys_region( region() );
   set_led_color( led() );
 }
 
-void Console::tap_timeout( const milliseconds_t t_ticks, void( Console::*t_func)() )
+int Console::tap_timeout( const milliseconds_t t_ticks, void( Console::*t_func)() )
 {
   if
   ( ( t_ticks - _chronos ) >= BUTTON_TAPOUT )
   {
     noInterrupts();
-    _tap = 0;
+    auto reconf{ static_cast< ETap >( _can_reconfigure = false ) };
+
     ( this->*t_func )();
     interrupts();
+    return 0;
   }
+  return 1;
 }
 
 void Console::handle( const milliseconds_t t_ticks )
 {
-  if ( _lock ) return;
-
-  if( _is_button_pressed )
-  {
+  if
+  ( _is_button_pressed )
     cycle_region_timeout( t_ticks );
-  }
-  else
+  else if
+  ( _can_reconfigure )
   {
-    cycle_region_reset( t_ticks );
-
     switch
-    ( _tap )
+    ( tap() )
     {
-      case SINGLE_TAP: tap_timeout( t_ticks, &restart ); return;
-      case DOUBLE_TAP: tap_timeout( t_ticks, &save_region ); return;
-      case TRIPLE_TAP: tap_timeout( t_ticks, &flip_use_controller ); return;
-      default: tap_timeout( t_ticks, &default_tap ); return;
+      case SINGLE_TAP: if ( !tap_timeout( t_ticks, &restart ) ) {
+          delay( BUTTON_RESET_TIME );
+          set_led_color( led() );
+          tap( NOT_TAPPED );
+        } break;
+      case DOUBLE_TAP: if ( !tap_timeout( t_ticks, &save_region ) ) {
+          led_info( WHITE );
+          tap( NOT_TAPPED );
+        } break;
+      case TRIPLE_TAP: if ( !tap_timeout( t_ticks, &flip_use_controller ) ) {
+          check_frequency();
+          tap( NOT_TAPPED );
+        } break;
+      case RESET_TAP:{
+          cycle_region_reset();
+        } break;
+      default:_can_reconfigure=false; break;
     }
   }
 }
@@ -283,12 +302,15 @@ void Console::handle( const milliseconds_t t_ticks )
 void Console::check_controller_preference() {
   ELed color{ is_controller_available ? GREEN : RED };
 
+  constexpr int h0{ BUTTON_TAPOUT / 4 },
+            h1{ BUTTON_TAPOUT / 2 };
+
   clear_led_port();
-  delay( 250 );
+  delay( h0 );
   set_led_color( CYAN );
-  delay( 250 );
+  delay( h0 );
   set_led_color( color );
-  delay( 400 );
+  delay( h1 );
   set_led_color( led() );
 }
 
@@ -297,11 +319,6 @@ const ERegion Console::region() const {
 }
 
 void Console::save_region() {
-  noInterrupts();
 
   eeprom_update_byte( REGION_LOC, _console_region );
-
-  interrupts();
-
-  led_info( WHITE );
 }

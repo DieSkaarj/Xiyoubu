@@ -42,15 +42,20 @@ class Console
     bool load_controller_preference();
 
     void default_tap();
-    void tap_timeout( const milliseconds_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
+    const ETap tap() { return _tap; }
+
+    int tap_timeout( const milliseconds_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
 
     void cycle_region_timeout( const milliseconds_t /* Ticks */ );
-    void cycle_region_reset( const milliseconds_t /* Ticks */ );
+    void cycle_region_reset();
+
+    void reset_button( const bool );
+    ETap tap( const ETap );
 
     const ELed led() const;
     void led_info( ELed t_color1, ELed t_color2 = 0 );
 
-    static uint32_t _chronos, _tap_timer;
+    static milliseconds_t _chronos, _tap_timer, _cycle_timer;
 
     static CPUClock _clock;
     byte_t _console_region, _tap;
@@ -69,7 +74,7 @@ class Console
     void check_frequency();
     void restart();
     void save_region();
-    void poll( const bool /* RESET Button */ );
+    static void poll( const Console*&,const bool /* RESET Button */ );
     void reconfigure( const ERegion t_region=load_region() );
     void handle( const milliseconds_t t_ticks );
 

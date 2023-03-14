@@ -20,6 +20,8 @@
 using namespace SETUP;
 using namespace ADVANCED_SETUP;
 
+volatile word_t Controller::_on_read{ ADVANCED_SETUP::PAD_CLEAR };
+
 Controller::Controller( const Console *&t_console ):
   console( t_console )
 {
@@ -56,7 +58,7 @@ bool Controller::sample()
   return false;
 }
 
-void Controller::poll( const bool t_signal, const port_t t_buttons )
+void Controller::poll( const Controller*& t_pad,const bool t_signal, const port_t t_buttons )
 {
   /*
      The idea here is just to copy the port register into the _on_read variable.
@@ -70,7 +72,9 @@ void Controller::poll( const bool t_signal, const port_t t_buttons )
      To accommodate for 6 Button pads just sample from the first change.
   */
 
-  if( sample() ) return;
+  auto &joypad{ t_pad };
+
+  if( joypad->sample() ) return;
 
   _on_read &= false == t_signal ? \
               ( t_buttons | 0xfe ) << 8 :

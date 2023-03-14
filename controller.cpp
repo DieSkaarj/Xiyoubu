@@ -110,7 +110,7 @@ void Controller::handle( const milliseconds_t t_ticks )
     case REGION_FORWARD:    console->reconfigure( console->region()-1 ); break;
     case REGION_BACKWARD:   console->reconfigure( console->region()+1 ); break;
     case IN_GAME_RESET:     console->restart(); clear(); break;
-    case SAVE_REGION:       console->save_region(); break;
+    case SAVE_REGION:       console->save_region(); console->led_info( WHITE ); break;
     case CHECK_FREQUENCY:   console->check_frequency(); break;
     default: delta = t_ticks; break;
   }

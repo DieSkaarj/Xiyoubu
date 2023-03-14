@@ -53,7 +53,6 @@ class Console
     ETap tap( const ETap );
 
     const ELed led() const;
-    void led_info( ELed t_color1, ELed t_color2 = 0 );
 
     static milliseconds_t _chronos, _tap_timer, _cycle_timer;
 
@@ -77,6 +76,7 @@ class Console
     static void poll( const Console*&,const bool /* RESET Button */ );
     void reconfigure( const ERegion t_region=load_region() );
     void handle( const milliseconds_t t_ticks );
+    void led_info( ELed t_color1, ELed t_color2 = 0 );
 
     void check_controller_preference();
     const ERegion region() const;

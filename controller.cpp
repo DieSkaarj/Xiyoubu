@@ -46,7 +46,7 @@ void Controller::clear()
   _on_read = PAD_CLEAR;
 }
 
-bool Controller::sample()
+const bool Controller::sample() const
 {
   static int sample{ 0 };
 
@@ -72,7 +72,7 @@ void Controller::poll( const Controller*& t_pad,const bool t_signal, const port_
      To accommodate for 6 Button pads just sample from the first change.
   */
 
-  auto &joypad{ t_pad };
+  const auto &joypad{ t_pad };
 
   if( joypad->sample() ) return;
 

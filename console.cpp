@@ -204,8 +204,8 @@ void Console::poll( const Console*& t_console, const bool t_button )
      on CHANGE
   */
 
-  auto &sega{ t_console };
-  auto tap{ sega->tap() };
+  const auto &sega{ t_console };
+  const auto tap{ sega->tap() };
 
   if
   ( !t_button )
@@ -271,31 +271,42 @@ void Console::handle( const milliseconds_t t_ticks )
 {
   if
   ( _is_button_pressed )
-    cycle_region_timeout( t_ticks );
-  else if
-  ( _can_reconfigure )
   {
+    cycle_region_timeout( t_ticks );
+  }
+  else
+  if
+  ( _can_reconfigure )
     switch
     ( tap() )
     {
-      case SINGLE_TAP: if ( !tap_timeout( t_ticks, &restart ) ) {
+      case SINGLE_TAP:
+        if ( !tap_timeout( t_ticks, &restart ) )
+        {
           delay( BUTTON_RESET_TIME );
           set_led_color( led() );
           tap( NOT_TAPPED );
-        } break;
-      case DOUBLE_TAP: if ( !tap_timeout( t_ticks, &save_region ) ) {
+        } 
+      break;
+
+      case DOUBLE_TAP:
+        if ( !tap_timeout( t_ticks, &save_region ) )
+        {
           led_info( WHITE );
           tap( NOT_TAPPED );
-        } break;
-      case TRIPLE_TAP: if ( !tap_timeout( t_ticks, &flip_use_controller ) ) {
+        }
+      break;
+
+      case TRIPLE_TAP:
+        if ( !tap_timeout( t_ticks, &flip_use_controller ) )
+        {
           check_frequency();
           tap( NOT_TAPPED );
-        } break;
-      case RESET_TAP:{
-          cycle_region_reset();
-        } break;
-      default:_can_reconfigure=false; break;
-    }
+        }
+      break;
+
+      case RESET_TAP: cycle_region_reset(); break;
+      default: _can_reconfigure=false; break;
   }
 }
 

@@ -262,7 +262,7 @@ int Console::tap_timeout( const milliseconds_t t_ticks, void( Console::*t_func)(
 
     ( this->*t_func )();
     interrupts();
-    return 0;
+    return _tap = 0;
   }
   return 1;
 }
@@ -285,24 +285,15 @@ void Console::handle( const milliseconds_t t_ticks )
         {
           delay( BUTTON_RESET_TIME );
           set_led_color( led() );
-          tap( NOT_TAPPED );
         } 
       break;
 
       case DOUBLE_TAP:
-        if ( !tap_timeout( t_ticks, &save_region ) )
-        {
-          led_info( WHITE );
-          tap( NOT_TAPPED );
-        }
+        if ( !tap_timeout( t_ticks, &save_region ) ) led_info( WHITE );
       break;
 
       case TRIPLE_TAP:
-        if ( !tap_timeout( t_ticks, &flip_use_controller ) )
-        {
-          check_frequency();
-          tap( NOT_TAPPED );
-        }
+        if ( !tap_timeout( t_ticks, &flip_use_controller ) ) check_frequency();
       break;
 
       case RESET_TAP: cycle_region_reset(); break;

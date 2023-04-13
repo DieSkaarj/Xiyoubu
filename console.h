@@ -27,7 +27,6 @@ class Console
     };
 
     static const ERegion load_region();
-    void reset_clock();
 
     void clear_sys_port();
     void clear_led_port();
@@ -41,15 +40,16 @@ class Console
     void flip_use_controller();
     bool load_controller_preference();
 
-    void default_tap();
     const ETap tap() { return _tap; }
 
-    int tap_timeout( const milliseconds_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
+    int on_tap_timeout( const milliseconds_t /* Ticks */, void( Console::* )() /*Void() Member Function Pointer*/ );
 
     void cycle_region_timeout( const milliseconds_t /* Ticks */ );
     void cycle_region_reset();
+    void can_reconfigure( const bool v ){ _can_reconfigure = v; }
 
-    void reset_button( const bool );
+    void reset_button( const bool t_val ){ _is_button_pressed = t_val; }
+    void restart();
     ETap tap( const ETap );
 
     const ELed led() const;
@@ -69,9 +69,9 @@ class Console
     bool is_controller_available;
 
     void on_startup( const milliseconds_t /* Ticks */ );
-    void overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
+    void shift_overclock( const bool /* Direction: Up=1/Down=0 */, const bool /* Step size: Big=1/Small=0 */ );
     void check_frequency();
-    void restart();
+    void in_game_restart();
     void save_region();
     static void poll( const Console*&,const bool /* RESET Button */ );
     void reconfigure( const ERegion t_region=load_region() );

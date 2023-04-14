@@ -6,12 +6,6 @@
 #include "console.h"
 #include "config.h"
 
-/*
-
-   CTORS
-
-*/
-
 #define INCREASE true
 #define DECREASE false
 #define MAJOR true
@@ -21,6 +15,18 @@ using namespace SETUP;
 using namespace ADVANCED_SETUP;
 
 volatile word_t Controller::_on_read{ ADVANCED_SETUP::PAD_CLEAR };
+
+/*********************************************************************
+
+  CLASS:    Controller
+  NAME:     Controller
+  DEPENDS:  const Console *&
+  RETURNS:  Controller
+  FUNCTION: Constructs Controller object and sets controller related
+            hardware values
+
+
+*********************************************************************/
 
 Controller::Controller( const Console *&t_console ):
   console( t_console )
@@ -35,16 +41,33 @@ Controller::Controller( const Console *&t_console ):
   CONTROLLER_INTR_MASK( SELECT_SIGMSK );
 }
 
-/*
+/*********************************************************************
 
-   FUNCTIONS
+  CLASS:    Controller
+  NAME:     clear
+  DEPENDS:  void
+  RETURNS:  void
+  FUNCTION: Clears controller related pins on Xiyoubu hardware.
 
-*/
+
+*********************************************************************/
 
 void Controller::clear()
 {
   _on_read = PAD_CLEAR;
 }
+
+/*********************************************************************
+
+  CLASS:    Controller
+  NAME:     sample
+  DEPENDS:  void
+  RETURNS:  const bool
+  FUNCTION: Takes the first sample and cuts the latter. This way it
+            only reads buttons related to 3 Buttons pads.
+
+
+*********************************************************************/
 
 const bool Controller::sample() const
 {
@@ -58,20 +81,26 @@ const bool Controller::sample() const
   return false;
 }
 
+/*********************************************************************
+
+  CLASS:    Controller
+  NAME:     poll
+  DEPENDS:  const Controller*&, const bool, const port_t
+  RETURNS:  void
+  FUNCTION: Takes the first sample and cuts the latter. This way it
+            only reads buttons related to 3 Buttons pads. When the 
+            SELECT signal from the console is high the ports' values
+            are shifted 8 bits to the left.
+
+            The registers read from an active low signal e.g.
+            if   ( SIGNAL == LOW  && START/C:pin1 == LOW ) then 'START' is expressed
+            elif ( SIGNAL == HIGH && START/C:pin1 == LOW ) then 'C' is expressed
+
+
+*********************************************************************/
+
 void Controller::poll( const Controller*& t_pad,const bool t_signal, const port_t t_buttons )
 {
-  /*
-     The idea here is just to copy the port register into the _on_read variable.
-     When the SELECT signal from the console is high the ports' values are
-     shifted 8 bits to the left.
-
-     The registers read from an active low signal e.g.
-     if   ( SIGNAL == LOW  && START/C:pin1 == LOW ) then 'START' is expressed
-     elif ( SIGNAL == HIGH && START/C:pin1 == LOW ) then 'C' is expressed
-
-     To accommodate for 6 Button pads just sample from the first change.
-  */
-
   const auto &joypad{ t_pad };
 
   if( joypad->sample() ) return;
@@ -84,6 +113,17 @@ void Controller::poll( const Controller*& t_pad,const bool t_signal, const port_
               ( t_buttons ^ 0xfe ) << 8 :
               ( t_buttons ^ 0xfe );
 }
+
+/*********************************************************************
+
+  CLASS:    Controller
+  NAME:     handle
+  DEPENDS:  void
+  RETURNS:  const milliseconds_t
+  FUNCTION: Handles input and directs them to functions.
+
+
+*********************************************************************/
 
 void Controller::handle( const milliseconds_t t_ticks )
 {

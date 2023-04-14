@@ -46,7 +46,7 @@ Console::Console( const milliseconds_t t_ticks ):
   _tap( 0 ),
   _is_button_pressed( false ),
   _can_reconfigure( false ),
-  _is_reconfigured( false ),
+  _can_tap( false ),
   _is_overclocked( false ),
   _lock( true ),
   is_controller_available( load_controller_preference() )
@@ -217,8 +217,10 @@ int Console::on_tap_timeout( const milliseconds_t t_ticks, void( Console::*t_fun
   {
     noInterrupts();
     tap( NOT_TAPPED );
+    _can_tap = false;
     ( this->*t_func )();
     _can_reconfigure = false;
+    _can_tap = true;
     interrupts();
     return 0;
   }
@@ -342,6 +344,7 @@ void Console::on_startup( const milliseconds_t t_wait )
   delay( t_wait );
 
   check_controller_preference();
+  _can_tap = true;
   _lock = false;
 }
 
@@ -450,6 +453,7 @@ void Console::poll( const Console*& t_console, const bool t_button )
 
   const auto &sega{ t_console };
   const auto tap{ sega->tap() };
+  const auto can_tap{ sega->_can_tap };
 
   if
   ( !t_button )
@@ -460,7 +464,7 @@ void Console::poll( const Console*& t_console, const bool t_button )
   else
   {
     sega->reset_button( false );
-    sega->tap( SINGLE_TAP + tap );
+    if( can_tap ) sega->tap( SINGLE_TAP + tap );
   }
 }
 
@@ -557,14 +561,9 @@ void Console::handle( const milliseconds_t t_ticks )
 
       case RESET_TAP:
         {
+          can_reconfigure( false );
           _chronos = t_ticks;
           tap( NOT_TAPPED );
-        }
-        break;
-
-      default:
-        {
-          can_reconfigure( false );
         }
         break;
     }

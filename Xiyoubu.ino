@@ -26,12 +26,18 @@
 #include "config.h"
 #include "console.h"
 #include "controller.h"
+#include "chronojohn.h"
 #include "pins_xiyoubu.h"
 
 using namespace SETUP;
 
-static const Console *MEGA_DRIVE;
-static const Controller *PAD;
+static const Console *MEGA_DRIVE{ nullptr };
+static const Controller *PAD{ nullptr };
+
+ISR( TIMER1_COMPA_vect )
+{
+  ++TICKS;
+}
 
 ISR( V_SELECT )
 {
@@ -40,16 +46,20 @@ ISR( V_SELECT )
 
 ISR( V_CONSOLE )
 {
+  PORTD ^= 1;
   Console::poll( MEGA_DRIVE,D_BUTTON );
 }
 
 int main()
 {
+  using namespace CHRONOJOHN;
+
   init();
+  start_ticks();
 
   noInterrupts();
 
-  MEGA_DRIVE = new Console( millis() );
+  MEGA_DRIVE = new Console( ticks() );
   PAD = new Controller( MEGA_DRIVE );
 
   MEGA_DRIVE->on_startup( STARTUP_TIME );

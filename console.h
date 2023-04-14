@@ -47,6 +47,7 @@ class Console
     void cycle_region_timeout( const milliseconds_t /* Ticks */ );
     void cycle_region_reset();
     void can_reconfigure( const bool v ){ _can_reconfigure = v; }
+    bool can_tap(){ return _can_tap; }
 
     void reset_button( const bool t_val ){ _is_button_pressed = t_val; }
     void restart();
@@ -60,7 +61,7 @@ class Console
     byte_t _console_region, _tap;
     bool _is_button_pressed,
          _can_reconfigure,
-         _is_reconfigured,
+         _can_tap,
          _is_overclocked,
          _lock;
 

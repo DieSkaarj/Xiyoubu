@@ -103,13 +103,13 @@ void Controller::handle( const milliseconds_t t_ticks )
   switch
   ( status )
   {
-    case OVERCLOCK_UP_MI:   console->overclock( INCREASE, MINOR ); break;
-    case OVERCLOCK_UP_MA:   console->overclock( INCREASE, MAJOR ); break;
-    case OVERCLOCK_DOWN_MI: console->overclock( DECREASE, MINOR ); break;
-    case OVERCLOCK_DOWN_MA: console->overclock( DECREASE, MAJOR ); break;
+    case OVERCLOCK_UP_MI:   console->shift_overclock( INCREASE, MINOR ); break;
+    case OVERCLOCK_UP_MA:   console->shift_overclock( INCREASE, MAJOR ); break;
+    case OVERCLOCK_DOWN_MI: console->shift_overclock( DECREASE, MINOR ); break;
+    case OVERCLOCK_DOWN_MA: console->shift_overclock( DECREASE, MAJOR ); break;
     case REGION_FORWARD:    console->reconfigure( console->region()-1 ); break;
     case REGION_BACKWARD:   console->reconfigure( console->region()+1 ); break;
-    case IN_GAME_RESET:     console->restart(); clear(); break;
+    case IN_GAME_RESET:     console->in_game_restart(); clear(); break;
     case SAVE_REGION:       console->save_region(); console->led_info( WHITE ); break;
     case CHECK_FREQUENCY:   console->check_frequency(); break;
     default: delta = t_ticks; break;

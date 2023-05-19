@@ -1,6 +1,6 @@
 ****MD1****
 
-Remember to adjust for printer tolerances. I used .005 for both ABS and PLA. Also note that, unless your lighter than a photon in a star, it is advised to use glue to hold this in.
+Remember to adjust for printer tolerances. I used .005 for both ABS and PLA. Also note that, unless you're lighter than a photon in a star, it is advised to use glue to hold this in.
 
 ****MD2 & MCD2****
 ***Scale the nut to be slightly larger.***

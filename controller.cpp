@@ -64,7 +64,8 @@ void Controller::clear()
   DEPENDS:  void
   RETURNS:  const bool
   FUNCTION: Takes the first sample and cuts the latter. This way it
-            only reads buttons related to 3 Buttons pads.
+            only reads buttons related to 3 Buttons pads. And, once
+            per frame.
 
 
 *********************************************************************/

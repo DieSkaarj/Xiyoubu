@@ -527,10 +527,7 @@ void Console::reconfigure( const ERegion t_region )
 void Console::handle( const milliseconds_t t_ticks )
 {
   if
-  ( _is_button_pressed )
-  {
-    cycle_region_timeout( t_ticks );
-  }
+  ( _is_button_pressed ) cycle_region_timeout( t_ticks );
   else if
   ( _can_reconfigure )
   {
@@ -538,34 +535,33 @@ void Console::handle( const milliseconds_t t_ticks )
     ( tap() )
     {
       case SINGLE_TAP:
+      {
+        if
+        ( !on_tap_timeout( t_ticks, &restart ) )
         {
-          if ( !on_tap_timeout( t_ticks, &restart ) )
-          {
-            delay( BUTTON_RESET_TIME );
-            set_led_color( led() );
-          }
+          delay( BUTTON_RESET_TIME );
+          set_led_color( led() );
         }
-        break;
+      }
+      break;
 
       case DOUBLE_TAP:
-        {
-          if ( !on_tap_timeout( t_ticks, &save_region ) ) led_info( WHITE );
-        }
-        break;
+        if
+        ( !on_tap_timeout( t_ticks, &save_region ) ) led_info( WHITE );
+      break;
 
       case TRIPLE_TAP:
-        {
-          if ( !on_tap_timeout( t_ticks, &flip_use_controller ) ) check_frequency();
-        }
-        break;
+        if
+        ( !on_tap_timeout( t_ticks, &flip_use_controller ) ) check_frequency();
+      break;
 
       case RESET_TAP:
-        {
-          can_reconfigure( false );
-          _chronos = t_ticks;
-          tap( NOT_TAPPED );
-        }
-        break;
+      {
+        can_reconfigure( false );
+        _chronos = t_ticks;
+        tap( NOT_TAPPED );
+      }
+      break;
     }
   }
 }

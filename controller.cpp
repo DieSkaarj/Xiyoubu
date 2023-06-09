@@ -16,6 +16,10 @@ using namespace ADVANCED_SETUP;
 
 volatile word_t Controller::_on_read{ ADVANCED_SETUP::PAD_CLEAR };
 
+constexpr byte_t PAD_CHAN{ 0x8 };
+
+
+
 /*********************************************************************
 
   CLASS:    Controller
@@ -107,12 +111,12 @@ void Controller::poll( const Controller*& t_pad,const bool t_signal, const port_
   if( joypad->sample() ) return;
 
   _on_read &= false == t_signal ? \
-              ( t_buttons | 0xfe ) << 8 :
-              ( t_buttons | 0xfe );
+              ( t_buttons | PAD_IO ) << PAD_CHAN :
+              ( t_buttons | PAD_IO );
 
   _on_read |= true  == t_signal ? \
-              ( t_buttons ^ 0xfe ) << 8 :
-              ( t_buttons ^ 0xfe );
+              ( t_buttons ^ PAD_IO ) << PAD_CHAN :
+              ( t_buttons ^ PAD_IO );
 }
 
 /*********************************************************************

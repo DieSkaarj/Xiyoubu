@@ -245,7 +245,8 @@ void Console::cycle_region_timeout( const milliseconds_t t_ticks )
   if
   ( ( t_ticks - _cycle_timer ) >= BUTTON_RESET_TIME )
   {
-    if ( _can_reconfigure )
+    if
+    ( _can_reconfigure )
     {
       reconfigure( region() + 1 );
       tap( RECONFIGURE );

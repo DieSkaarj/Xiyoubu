@@ -16,10 +16,6 @@ using namespace ADVANCED_SETUP;
 
 volatile word_t Controller::_on_read{ ADVANCED_SETUP::PAD_CLEAR };
 
-constexpr byte_t PAD_CHAN{ 0x8 };
-
-
-
 /*********************************************************************
 
   CLASS:    Controller
@@ -68,8 +64,7 @@ void Controller::clear()
   DEPENDS:  void
   RETURNS:  const bool
   FUNCTION: Takes the first sample and cuts the latter. This way it
-            only reads buttons related to 3 Buttons pads. And, once
-            per frame.
+            only reads buttons related to 3 Buttons pads.
 
 
 *********************************************************************/
@@ -111,12 +106,12 @@ void Controller::poll( const Controller*& t_pad,const bool t_signal, const port_
   if( joypad->sample() ) return;
 
   _on_read &= false == t_signal ? \
-              ( t_buttons | PAD_IO ) << PAD_CHAN :
-              ( t_buttons | PAD_IO );
+              ( t_buttons | 0xfe ) << 8 :
+              ( t_buttons | 0xfe );
 
   _on_read |= true  == t_signal ? \
-              ( t_buttons ^ PAD_IO ) << PAD_CHAN :
-              ( t_buttons ^ PAD_IO );
+              ( t_buttons ^ 0xfe ) << 8 :
+              ( t_buttons ^ 0xfe );
 }
 
 /*********************************************************************
@@ -148,15 +143,21 @@ void Controller::handle( const milliseconds_t t_ticks )
   switch
   ( status )
   {
+#ifdef OVERCLOCK
     case OVERCLOCK_UP_MI:   console->shift_overclock( INCREASE, MINOR ); break;
     case OVERCLOCK_UP_MA:   console->shift_overclock( INCREASE, MAJOR ); break;
     case OVERCLOCK_DOWN_MI: console->shift_overclock( DECREASE, MINOR ); break;
     case OVERCLOCK_DOWN_MA: console->shift_overclock( DECREASE, MAJOR ); break;
+    case CHECK_FREQUENCY:   console->check_frequency(); break;
+#endif
+#ifdef IGR
+    case IN_GAME_RESET:     console->in_game_restart(); clear(); break;
+#endif
+#ifdef REMOTE_REGION
     case REGION_FORWARD:    console->reconfigure( console->region()-1 ); break;
     case REGION_BACKWARD:   console->reconfigure( console->region()+1 ); break;
-    case IN_GAME_RESET:     console->in_game_restart(); clear(); break;
     case SAVE_REGION:       console->save_region(); console->led_info( WHITE ); break;
-    case CHECK_FREQUENCY:   console->check_frequency(); break;
+#endif
     default: delta = t_ticks; break;
   }
 

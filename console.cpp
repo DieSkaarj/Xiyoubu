@@ -181,6 +181,7 @@ void Console::set_led_color( const ELed color )      {
 
 void Console::flip_use_controller() {
   eeprom_update_byte( CNTRLR_LOC, is_controller_available = !is_controller_available );
+  check_frequency();
 }
 
 /*********************************************************************
@@ -245,8 +246,7 @@ void Console::cycle_region_timeout( const milliseconds_t t_ticks )
   if
   ( ( t_ticks - _cycle_timer ) >= BUTTON_RESET_TIME )
   {
-    if
-    ( _can_reconfigure )
+    if ( _can_reconfigure )
     {
       reconfigure( region() + 1 );
       tap( RECONFIGURE );
@@ -291,7 +291,7 @@ void Console::cycle_region_reset()
 
 void Console::restart()
 {
-  clear_led_port();
+//  clear_led_port();
   P_CONSOLE &= ~_BV( P_RESET );
   delayMicroseconds( 168e+4 );
   P_CONSOLE |= _BV( P_RESET );
@@ -344,7 +344,7 @@ void Console::on_startup( const milliseconds_t t_wait )
 {
   delay( t_wait );
 
-  check_controller_preference();
+//  check_controller_preference();
   _can_tap = true;
   _lock = false;
 }
@@ -414,8 +414,8 @@ void Console::check_frequency()
 void Console::in_game_restart()
 {
   restart();
-  delay( BUTTON_RESET_TIME );
-  set_led_color( led() );
+//  delay( BUTTON_RESET_TIME );
+//  set_led_color( led() );
 }
 
 /*********************************************************************
@@ -432,6 +432,7 @@ void Console::in_game_restart()
 void Console::save_region() {
 
   eeprom_update_byte( REGION_LOC, _console_region );
+  led_info( WHITE );
 }
 
 /*********************************************************************
@@ -528,42 +529,26 @@ void Console::reconfigure( const ERegion t_region )
 void Console::handle( const milliseconds_t t_ticks )
 {
   if
-  ( _is_button_pressed ) cycle_region_timeout( t_ticks );
+  ( _is_button_pressed )
+  {
+    cycle_region_timeout( t_ticks );
+  }
   else if
   ( _can_reconfigure )
   {
     switch
     ( tap() )
     {
-      case SINGLE_TAP:
-      {
-        if
-        ( !on_tap_timeout( t_ticks, &restart ) )
-        {
-          delay( BUTTON_RESET_TIME );
-          set_led_color( led() );
-        }
-      }
-      break;
-
-      case DOUBLE_TAP:
-        if
-        ( !on_tap_timeout( t_ticks, &save_region ) ) led_info( WHITE );
-      break;
-
-      case TRIPLE_TAP:
-        if
-        ( !on_tap_timeout( t_ticks, &flip_use_controller ) ) check_frequency();
-      break;
-
-      case RESET_TAP:
-      {
-        can_reconfigure( false );
-        _chronos = t_ticks;
-        tap( NOT_TAPPED );
-      }
-      break;
+      case SINGLE_TAP:  on_tap_timeout( t_ticks, &restart ); break;
+      case DOUBLE_TAP:  on_tap_timeout( t_ticks, &save_region ); break;
+      case TRIPLE_TAP:  on_tap_timeout( t_ticks, &flip_use_controller ); break;
+      default:
+      case RESET_TAP:   on_tap_timeout( t_ticks, &cycle_region_reset ); break;
     }
+  }
+  else
+  {
+    _chronos = t_ticks; 
   }
 }
 

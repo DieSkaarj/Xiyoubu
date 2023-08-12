@@ -3,6 +3,9 @@
 
 #include "enumerations.h"
 
+//#define OVERCLOCK
+#define IGR
+
 namespace SETUP {
 
   /******************************/
@@ -210,7 +213,6 @@ namespace ADVANCED_SETUP {
   */
   PAD_MASK          { 0b1111011000000110 }, \
   PAD_CLEAR         { 0b1111111111111111 }, \
-  PAD_IO            { 0b11111110 } \,
   
   /****************/
   

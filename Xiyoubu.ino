@@ -46,7 +46,6 @@ ISR( V_SELECT )
 
 ISR( V_CONSOLE )
 {
-  PORTD ^= 1;
   Console::poll( MEGA_DRIVE,D_BUTTON );
 }
 

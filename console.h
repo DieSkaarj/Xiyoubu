@@ -58,6 +58,7 @@ class Console
     static milliseconds_t _chronos, _tap_timer, _cycle_timer;
 
     static CPUClock _clock;
+    static bool _reset_type;
     byte_t _console_region, _tap;
     bool _is_button_pressed,
          _can_reconfigure,

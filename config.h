@@ -5,6 +5,7 @@
 
 //#define OVERCLOCK
 #define IGR
+#define REMOTE_REGION
 
 namespace SETUP {
 

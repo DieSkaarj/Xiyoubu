@@ -26,6 +26,7 @@ Console::_cycle_timer{ 0 };
 
 CPUClock \
 Console::_clock( MIN_MHZ );
+bool Console::_reset_type{ D_BUTTON };
 
 constexpr Console::Mode Console::mode[4];
 
@@ -344,9 +345,11 @@ void Console::on_startup( const milliseconds_t t_wait )
 {
   delay( t_wait );
 
+  _reset_type = D_BUTTON;
 //  check_controller_preference();
   _can_tap = true;
   _lock = false;
+  
 }
 
 /*********************************************************************
@@ -458,7 +461,7 @@ void Console::poll( const Console*& t_console, const bool t_button )
   const auto can_tap{ sega->_can_tap };
 
   if
-  ( !t_button )
+  ( _reset_type == !t_button )
   {
     sega->reset_button( true );
     _chronos = millis();

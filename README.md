@@ -4,8 +4,6 @@ Xiyoubu is a hardware console mod for the Mega Drive/Genesis that targets ****MH
 
 Xiyoubu will load the last saved profile on console power on.
 
-***Xiyoubu has only been tested and confirmed working on a PAL Mega Drive II.***
-
 Default config...
 
 #### Controller

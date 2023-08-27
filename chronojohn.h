@@ -12,7 +12,7 @@ namespace CHRONOJOHN
   {
     TCCR1A = TCNT1 = TCCR1B = 0;
     TCCR1B |= _BV( CS12 ) | _BV( WGM12 );
-    OCR1A = 3125;
+    OCR1A = 31250;
     TIMSK1 = _BV( OCIE1A );
 
     TICKS = 0;

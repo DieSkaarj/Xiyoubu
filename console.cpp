@@ -218,15 +218,14 @@ int Console::on_tap_timeout( const milliseconds_t t_ticks, void( Console::*t_fun
   ( ( t_ticks - _chronos ) >= BUTTON_TAPOUT )
   {
     noInterrupts();
-    tap( NOT_TAPPED );
-    _can_tap = false;
+    _can_reconfigure = _can_tap = false;
     ( this->*t_func )();
-    _can_reconfigure = false;
-    _can_tap = true;
+    tap( NOT_TAPPED );
     interrupts();
-    return 0;
+    _can_tap = true;
+    return EXIT_SUCCESS;
   }
-  return 1;
+  return EXIT_FAILURE;
 }
 
 /*********************************************************************
@@ -543,8 +542,8 @@ void Console::handle( const milliseconds_t t_ticks )
     ( tap() )
     {
       case SINGLE_TAP:  on_tap_timeout( t_ticks, &restart ); break;
-      case DOUBLE_TAP:  on_tap_timeout( t_ticks, &save_region ); break;
-      case TRIPLE_TAP:  on_tap_timeout( t_ticks, &flip_use_controller ); break;
+      case DOUBLE_TAP:  if( EXIT_SUCCESS == on_tap_timeout( t_ticks, &save_region ) ) led_info( BLACK,WHITE ) ; break;
+      case TRIPLE_TAP:  if( EXIT_SUCCESS == on_tap_timeout( t_ticks, &flip_use_controller ) ) check_controller_preference(); break;
       default:
       case RESET_TAP:   on_tap_timeout( t_ticks, &cycle_region_reset ); break;
     }
@@ -602,7 +601,7 @@ void Console::check_controller_preference() {
 
   clear_led_port();
   delay( h0 );
-  set_led_color( CYAN );
+  set_led_color( color );
   delay( h0 );
   set_led_color( color );
   delay( h1 );

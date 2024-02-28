@@ -24,8 +24,13 @@ Console::_chronos{ 0 }, \
 Console::_tap_timer{ 0 }, \
 Console::_cycle_timer{ 0 };
 
-CPUClock \
-Console::_clock( MIN_MHZ );
+#ifdef OVERCLOCK
+  CPUClock Console::_clock( STARTUP_FREQ );
+#endif
+#ifdef VIDEO
+  CPUClock Console::_clock( VIDEO_OUT );
+#endif
+
 bool Console::_reset_type{ D_BUTTON };
 
 constexpr Console::Mode Console::mode[4];
@@ -58,8 +63,8 @@ Console::Console( const milliseconds_t t_ticks ):
   SETUP_LED( LED_IO, LED_CFG );
   SETUP_CONSOLE( CONSOLE_IO, CONSOLE_CFG );
 
-  reconfigure( load_region() );
   _clock.reset( _clock );
+  reconfigure( load_region() );
 }
 
 /*********************************************************************

@@ -9,8 +9,8 @@ using namespace ADVANCED_SETUP;
 
 const frequency_t CPUClock::_min{ MIN_MHZ };
 const frequency_t CPUClock::_max{ MAX_MHZ };
-const frequency_t CPUClock::_step_s{ STEP_MI };
-const frequency_t CPUClock::_step_l{ STEP_MA };
+const frequency_t CPUClock::_step_s{ STEP_MIN };
+const frequency_t CPUClock::_step_l{ STEP_MAJ };
 
 CPUClock::CPUClock( const frequency_t t_q ):
   _frequency( t_q ),
@@ -59,7 +59,7 @@ void CPUClock::send_ad9833( const frequency_t t_freq )
   write_ad9833( lsb );
   write_ad9833( msb );
   write_ad9833( PHASE_OFFSET );
-  write_ad9833( SQUARE_WAVE );
+  write_ad9833( OUTPUT_WAVE );
   ;;
   P_CLOCK |= _BV( P_FSYNC );
 }
@@ -75,7 +75,7 @@ void CPUClock::step( const bool t_size ) {
 void CPUClock::reset( const frequency_t t_mhz ) {
   noInterrupts();
   halt( true );
-  delay( CPU_HALT_TIME * .5 );
+//  delay( CPU_HALT_TIME * .5 );
   send_ad9833( _frequency = t_mhz );
   halt( false );
   interrupts();

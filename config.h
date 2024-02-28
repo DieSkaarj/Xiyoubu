@@ -4,6 +4,7 @@
 #include "enumerations.h"
 
 //#define OVERCLOCK
+#define VIDEO
 #define IGR
 #define REMOTE_REGION
 
@@ -51,24 +52,40 @@ namespace SETUP {
   
   /********************/
   
-  /******************/
-  /*  CPU FREQUENCY */
-  /******************/
+  /**********************/
+  /*  CRYSTAL FREQUENCY */
+  /**********************/
   constexpr frequency_t \
   /*
+     The frequency for the PAL colorburst signal is:
+     4.43361875. It may need tweaked depending on 
+     the device accuracy.
+
+     Note: for NTSC the color burst frequency is:
+     3.59545.
+
      MIN<->MAX and Step frequencies for overclocking
      the CPU. The MD/Gen varies from region but a min
      of 7.5Mhz is given.
-  
+     
+     Use 'e+6' to translate Mhz into Hz.
+
+     Base Frequency is specific to the AD9833 Module.
   */
   /******************/
-  
+
+  COLOR_PAL         { 4.43361875e+6 }, \
+  COLOR_NTSC        { 3.579545e+6 }, \
+  VIDEO_OUT         { COLOR_PAL }, \
+
   MAX_MHZ           { 13.e+6 }, \
   MIN_MHZ           { 7.5e+6 }, \
   PAL_MHZ           { 7.600489e+6 }, \
   NTSC_MHZ          { 7.670454e+6 }, \
-  STEP_MI           { .1e+6 }, \
-  STEP_MA           { .2e+6 };
+  STEP_MIN          { .1e+6 }, \
+  STEP_MAJ          { .2e+6 }, \
+  STARTUP_FREQ      { MIN_MHZ }, \
+  BASE_FREQ         { 25.e+6 };
   
   /******************/
   
@@ -87,8 +104,8 @@ namespace SETUP {
   */
   /**********************/
   
-  MNU_I              { START | A | C }, \
-  MNU_II             { START | B }, \
+  MENU_I              { START | A | C }, \
+  MENU_II             { START | B }, \
   
   /**********************/
   
@@ -106,15 +123,15 @@ namespace SETUP {
   */
   /******************/
   
-  REGION_FORWARD    { MNU_I  | LEFT }, \
-  REGION_BACKWARD   { MNU_I  | RIGHT }, \
-  IN_GAME_RESET     { MNU_I  | B }, \
-  SAVE_REGION       { MNU_I  | UP }, \
-  CHECK_FREQUENCY   { MNU_I  | DOWN }, \
-  OVERCLOCK_UP_MA   { MNU_II | UP }, \
-  OVERCLOCK_UP_MI   { MNU_II | RIGHT }, \
-  OVERCLOCK_DOWN_MA { MNU_II | DOWN }, \
-  OVERCLOCK_DOWN_MI { MNU_II | LEFT };
+  REGION_FORWARD    { MENU_I  | LEFT }, \
+  REGION_BACKWARD   { MENU_I  | RIGHT }, \
+  IN_GAME_RESET     { MENU_I  | B }, \
+  SAVE_REGION       { MENU_I  | UP }, \
+  CHECK_FREQUENCY   { MENU_I  | DOWN }, \
+  OVERCLOCK_UP_MA   { MENU_II | UP }, \
+  OVERCLOCK_UP_MI   { MENU_II | RIGHT }, \
+  OVERCLOCK_DOWN_MA { MENU_II | DOWN }, \
+  OVERCLOCK_DOWN_MI { MENU_II | LEFT };
 
   /******************/
 };
@@ -228,14 +245,12 @@ namespace ADVANCED_SETUP {
   
   */
   /**************************************/
-  
+
+  SINE_WAVE         { 0x2000 }, \
   SQUARE_WAVE       { 0x2028 }, \
   OSC_CTRL          { 0x2100 }, \
-  PHASE_OFFSET      { 0xC000 };
-
-  constexpr frequency_t \
-
-  BASE_FREQ         { 25.e+6 };
+  PHASE_OFFSET      { 0xC000 },
+  OUTPUT_WAVE       { SQUARE_WAVE };
 
   /**************************************/
 };

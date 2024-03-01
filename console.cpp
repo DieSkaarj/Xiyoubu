@@ -230,6 +230,7 @@ int Console::on_tap_timeout( const milliseconds_t t_ticks, void( Console::*t_fun
     _can_tap = true;
     return EXIT_SUCCESS;
   }
+
   return EXIT_FAILURE;
 }
 
@@ -259,7 +260,7 @@ void Console::cycle_region_timeout( const milliseconds_t t_ticks )
     else
       _can_reconfigure = true;
 
-    _cycle_timer = t_ticks;
+    _cycle_timer = millis();
   }
 }
 
@@ -280,6 +281,7 @@ void Console::cycle_region_reset()
   noInterrupts();
   if ( tap() ) tap( NOT_TAPPED );
   if ( _can_reconfigure )  _can_reconfigure = false;
+  _chronos=millis();
   interrupts();
 }
 
@@ -555,7 +557,7 @@ void Console::handle( const milliseconds_t t_ticks )
   }
   else
   {
-    _chronos = t_ticks; 
+    _chronos = millis(); 
   }
 }
 

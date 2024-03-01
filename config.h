@@ -71,12 +71,19 @@ namespace SETUP {
      Use 'e+6' to translate Mhz into Hz.
 
      Base Frequency is specific to the AD9833 Module.
+
+    Lo: 4.43316941e+6 ?
+    Hi: 4.43411000e+6 ?
+    
+     4.43351X3 ?
+           3
   */
   /******************/
 
   COLOR_PAL         { 4.43361875e+6 }, \
   COLOR_NTSC        { 3.579545e+6 }, \
-  VIDEO_OUT         { COLOR_PAL }, \
+  COLOR_CUSTOM      { 4.43358875e+6 }, \
+  VIDEO_OUT         { COLOR_CUSTOM }, \
 
   MAX_MHZ           { 13.e+6 }, \
   MIN_MHZ           { 7.5e+6 }, \
@@ -248,6 +255,7 @@ namespace ADVANCED_SETUP {
 
   SINE_WAVE         { 0x2000 }, \
   SQUARE_WAVE       { 0x2028 }, \
+  TRIANGLE_WAVE     { 0x2002 }, \
   OSC_CTRL          { 0x2100 }, \
   PHASE_OFFSET      { 0xC000 },
   OUTPUT_WAVE       { SQUARE_WAVE };

@@ -1,5 +1,8 @@
                                 Davids' all in one Mega Drive Mod wiring guide
 
+
+### REGION
+------------------------------------------------------------------------------------------------------------------
  Colour * Port Ref.| Connection                     Model                  Connection    | Port Ref.* Colour           
         *          |                              +-------+                              |          *
         *          |               +--------------|  USB  |--------------+               |          *
@@ -22,7 +25,7 @@ Blue    *   P_D2   | Pad A/B       | [*] 2/INT0 [ ]  [ ]  [ ]     VIN[ ] |      
         *          |               |            [ ]  [ ]  [ ]            |               |          *
         *          |               |            MISO SCK  RST            |               |          *
         *         /                +--ATtiny88---------------------------+               \          *
-                                                
+------------------------------------------------------------------------------------------------------------------                                                
 Dia. 2: MD Board Underside * Dia. 3: Controller wire layout                      
        +-----------+       * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
        | 5 4 3 2 1 |       * |  P_D1 :1  |  P_D2 :2  |  P_D3 :3  +  P_D7 :7  +  P_D6 :6  +  P_D5 :5  +  P_D4 :4  +
@@ -31,5 +34,23 @@ Dia. 2: MD Board Underside * Dia. 3: Controller wire layout
                            * +-----------+-----------+-----------+-----------+-----------+-----------+-----------+
                            * |   White   |    Grey   |   Blue    |  Yellow   |  Orange   |    Red    |   Brown   |
                            *  +----------+-----------+-----------+-----------+-----------+-----------+----------+
+------------------------------------------------------------------------------------------------------------------
+Notes:
+* 8:GND (Unused,) 5:+5V (Unused) can be used to power the MH-Attiny88 board.
 
-Note: 8:GND (Unused,) 5:+5V (Unused)
+### VIDEO_CRYSTAL
+------------------------------------------------------------------------------------------------------------------
+AD9833  |              Connection
+------------------------------------------------------------------------------------------------------------------
+OUT     | --> \   PIN_6   [XTAL IN / CX1145P]
+AGND    | --> \   PIN_5   [XTAL OUT / CX1145P]
+FSYNC   | --> |   PIN_10  [SS 10 / MH-ATtiny88]
+SCLK    | --> |   PIN_13  [SCK 13 / MH-ATtiny88]
+SDATA   | --> |   PIN_11  [MOSI 11 / MH-ATtiny88]
+DGND    | --> /   5V      [MD Motherboard]
+VCC     | --> /   GND     [MD Motherboard]
+------------------------------------------------------------------------------------------------------------------
+Notes:
+*  Only available on Mega Drive/Genesis 1 Models
+*  Disconnect PIN_6 on the CX1145P from the main board of the Mega Drive.
+*  Bridge PIN_1 to PIN 7 for PAL (GND.) Bridge PIN_12 to PIN_7 for NTSC (VCC.)
